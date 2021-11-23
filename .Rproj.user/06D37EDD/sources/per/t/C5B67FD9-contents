@@ -17,17 +17,21 @@ remote_driver$open()
 remote_driver$navigate("http://179.43.97.82:8081/distribuidora/login.zul;jsessionid=3633CFA707580B3ED1A0B8A783EAE344")
 
 #enviar usuario
-username <- remote_driver$findElement(using = "id",value = "dKzPe")
+username <- remote_driver$findElement(using = "class",
+                                      value ="z-textbox")
+
 username$clearElement()
-username$sendKeysToElement(list("ksarmiento"))
+username$sendKeysToElement(list("ksarmiento", "\uE007"))
+
 
 #enviar contraseña
-passwd <- remote_driver$findElement(using = "id",value = "dKzPi")
+passwd <- remote_driver$findElement(using = "class",
+                                    value = "z-textbox")
 passwd$clearElement()
 passwd$sendKeysToElement(list("3217"))
 
 #click en login para entrar
-login <- remote_driver$findElement(using = "id",value = "dKzPl")
+login <- remote_driver$findElement(using = "id",value = "z0FQl")
 login$clickElement()
 # hasta aqui ya logre ingresar a la pagina logeandome, ahora a extraer la data necesaria
 
