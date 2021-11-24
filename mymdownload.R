@@ -17,9 +17,15 @@ Sys.sleep(2)
 remote_driver$navigate("http://179.43.97.82:8081/distribuidora/login.zul;jsessionid=3633CFA707580B3ED1A0B8A783EAE344")
 Sys.sleep(2)
 #enviar usuario
+
 username <- remote_driver$findElement(using = "class",value = "z-textbox")
+
+username <- remote_driver$findElement(using = "class",
+                                      value ="z-textbox")
+
 username$clearElement()
-username$sendKeysToElement(list("ksarmiento"))
+username$sendKeysToElement(list("ksarmiento", "\uE007"))
+
 
 #obteniendo id de el password
 #con esto ya se que mi id es este, y como ya se que para el password solo cambia la letra final y el numero de caracteres no cambias
@@ -30,11 +36,15 @@ idpasswd<-paste0(idpasswd,"i")
 
 #enviar contraseña
 passwd <- remote_driver$findElement(using = "id",value = idpasswd)
+
+passwd <- remote_driver$findElement(using = "class",
+                                    value = "z-textbox")
+
 passwd$clearElement()
 passwd$sendKeysToElement(list("3217, '\uE007'"))
 Sys.sleep(2)
 #click en login para entrar
-login <- remote_driver$findElement(using = "id",value = "dKzPl")
+login <- remote_driver$findElement(using = "id",value = "z0FQl")
 login$clickElement()
 # hasta aqui ya logre ingresar a la pagina logeandome, ahora a extraer la data necesaria
 
