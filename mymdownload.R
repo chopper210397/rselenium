@@ -8,7 +8,7 @@ library(lubridate)
 #rselenium es un sistema de java que sirve para testear o simular software
 
 #estamos haciendo la conexion mediante firefox
-driver <- rsDriver(browser = c("chrome"),port = 4446L)
+driver <- rsDriver(browser = c("firefox"),port = 4446L)
 remote_driver <- driver[["client"]]
 
 remote_driver$open()
@@ -17,7 +17,7 @@ Sys.sleep(2)
 remote_driver$navigate("http://179.43.97.82:8081/distribuidora/login.zul;jsessionid=3633CFA707580B3ED1A0B8A783EAE344")
 Sys.sleep(2)
 #enviar usuario
-rm(username,passwd,idlogin,idpasswd,key,id71lansier,iddescargadetalle,idgenpaquetes,idlinea,idmesdic,idmesnov,idpaquetes,idperiodo,key2)
+# rm(username,passwd,idlogin,idpasswd,key,id71lansier,iddescargadetalle,idgenpaquetes,idlinea,idmesdic,idmesnov,idpaquetes,idperiodo,key2)
 
 username <- remote_driver$findElement(using = "class",value = "z-textbox")
 username$clearElement()
