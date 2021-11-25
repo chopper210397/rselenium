@@ -12,12 +12,12 @@ remote_driver$navigate("http://190.116.51.180:8080/dimexaproveedor/login.zul")
 
 username<- remote_driver$findElement(using= "id", value="z_d__l")
 username$clearElement()
-username$senKeysToElement(list(P625))
+username$sendKeysToElement(list("P625"))
 
 
 passwd<-remote_driver$findElement(using="id",value="z_d__o")
 passwd$clearElement()
-passwd$sendKeysToElement(list(895623))
+passwd$sendKeysToElement(list("895623"))
 
 login <- remote_driver$findElement(using = "id",value ="z_d__r")
 login$clickElement()
@@ -30,20 +30,25 @@ ventadetallada$clickElement()
 # LA PRIMERA UNIDAD AREQUIPA VIENE SELECCIONADA POR DEFECTO
 
 # LINEA
-LINEA <- remote_driver$findElement(using = "id",value = "z_d__u1-btn")
+LINEA <- remote_driver$findElement(using = "id",value = "z_d__a3-btn")
 LINEA$clickElement()
 
 # 128-LANSIER
-LINEA128 <- remote_driver$findElement(using = "id",value = "z_d__e3 > td.z-comboitem-text")
+LINEA128 <- remote_driver$findElement(using = "id",value = "z_d__h5-pp")
 LINEA128$clickElement()
 
 # DIVISION
-DIVISION<- remote_driver$findElement(using = "id",value = "z_d__12-btn")
+DIVISION<- remote_driver$findElement(using = "id",value = "z_d__k5-btn")
 DIVISION$clickElement()
 
 # SALUD
-SALUD<- remote_driver$findElement(using = "id",value = "z_d__fe > td.z-comboitem-text")
+SALUD<- remote_driver$findElement(using = "xpath",value = "/html/body/div[4]/table/tbody/tr[3]/td[2]")
 SALUD$clickElement()
+
+# BUSCANDO POR EL XPATH PUEDE SER UNA BUENA SOLUCION EN ALGUNOS CASOS
+# DONDE NO ENCUENTRA NI MEDIANTE ID NI CSS
+
+
 
 # PERIODO
 PERIODO<- remote_driver$findElement(using = "id",value = "z_d__52-btn")
