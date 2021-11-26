@@ -12,7 +12,7 @@ Sys.sleep(10)
 driver <- rsDriver(browser = c("firefox"),port = 4440L, extraCapabilities = makeFirefoxProfile(list(
   "browser.helperApps.neverAsk.saveToDisk"="application/vnd.ms-excel")
 ))
-
+Sys.sleep(20)
 remote_driver <- driver[["client"]]
 
 # install.packages("Rtools") por seacaso
@@ -76,17 +76,63 @@ remote_driver$click(buttonId = "RIGHT")
 # install.packages("XLConnect")
 library(XLConnect)
 library(dplyr)
+library(readxl)
 Sys.sleep(3)
-data <- readWorksheetFromFile("C:\\Users\\LBarrios\\Downloads\\FacMet_20211125.xls", sheet = "FacturacionMetronic",
+data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),day(today()),".xls"), sheet = "FacturacionMetronic",
                               startRow = 6,
                               startCol = 1)
-
+Sys.sleep(4)
 # retirando las columnas que eran merge de las otras
 data<-data %>% select(-Col6,-Col12)
 
-data2<-data %>% filter(Periodo=="202111")
-data3<-data2 %>% filter(Artículo!="MACUVIT X 60 CAPSULAS")
-rm(data3)
+# seleccionando data del periodo 202111 o segun corresponda
+data<-data %>% filter(Periodo==paste0(year(today()),month(today())))
+
+# borrando los valores de articulo iguales a productos covid
+data<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
+
+# borrando de columna Vendedor = OFICINA
+data<-data %>% filter(!(Vendedor %in% c("OFICINA")))
+
+# creando columna fuente que diga METRONIC
+data3<-data2 %>% mutate(FUENTE="METRONIC")
+
+# creando columna periodo con el primer dia del mes a actualizar
+data4<-data3 %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
+
+# insertando columna ELIMINAR en vacio
+data5<-data4 %>% mutate(ELIMINAR="")
+
+# creando columna DSCZONA 
+data6<-data5 %>% mutate(DSCZONA="")
+
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data7<-data6 %>% mutate(ppuni="") %>% mutate(ppsol="") %>% mutate(flag="") %>% mutate(dpto="") %>% mutate(dist="") %>% mutate(prov="")
+
+# seleccionando solo las columnas que nos interesan
+data8<-data7 %>%
+  select(FUENTE,Periodo,Nro.Doc,Fecha,Ruc,ELIMINAR,Cliente,Condición,Artículo,Cant,Subtotal,DSCZONA,Zona,Vendedor,ppuni,ppsol,flag,dpto,dist,prov)
+
+
+maestrolansier<-read_xlsx("maestrolansier.xlsx")
 
 
 
+
+df1<-data8 %>% select(Artículo)
+df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`,TIPO,equipo)
+colnames(df2)<-c("Artículo","artdesvalidvalid","tipo","equipo")
+# solucion 1
+ArtdesValid<-merge(x = df1, y = df2, by.x = "Artículo", by.y = "METRONIC", all.x = TRUE)
+
+# solucion 2
+ga<-merge(x=df1,y=df2,by = "Artículo")
+# solucion 3
+ga<-inner_join(mutate(df1, k = 1), mutate(df2, k = 1), by = "k")
+
+ga<-merge(x = df1, y = df2, all = TRUE)
+rm(ga)
+# solucion 4
+ga<-dplyr::left_join(df1, distinct(df2), by = "Artículo")
+
+# solucion 5
