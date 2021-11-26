@@ -2,12 +2,14 @@ library(RSelenium)
 library(rvest)
 library(tidyverse)
 library(lubridate)
+library(readxl)
+library(lubridate)
 Sys.sleep(10)
 # este pagina es la que nos brinda la parte de application/vnd.... , esto es necesario ponerlo para que el buscador de firefox no nos pregunte si queremos 
 # guardar o abrir el archivo, porque eso mata todo el codigo, mediante este codigo, especifico para documentos con terminación xls, podemos saltar el pop-up
 # y descargar directamente en la carpeta de descargas o downloads de la página.
 # https://www.freeformatter.com/mime-types-list.html
-driver <- rsDriver(browser = c("firefox"),port = 4441L, extraCapabilities = makeFirefoxProfile(list(
+driver <- rsDriver(browser = c("firefox"),port = 4440L, extraCapabilities = makeFirefoxProfile(list(
   "browser.helperApps.neverAsk.saveToDisk"="application/vnd.ms-excel")
 ))
 
@@ -70,26 +72,21 @@ remote_driver$click(buttonId = "RIGHT")
 ############################################################################################
 ############################################################################################
 
+# gracias a este paquete pude leer el excel, ya que de otra forma no podia
+# install.packages("XLConnect")
+library(XLConnect)
+library(dplyr)
+Sys.sleep(3)
+data <- readWorksheetFromFile("C:\\Users\\LBarrios\\Downloads\\FacMet_20211125.xls", sheet = "FacturacionMetronic",
+                              startRow = 6,
+                              startCol = 1)
 
+# retirando las columnas que eran merge de las otras
+data<-data %>% select(-Col6,-Col12)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+data2<-data %>% filter(Periodo=="202111")
+data3<-data2 %>% filter(Artículo!="MACUVIT X 60 CAPSULAS")
+rm(data3)
 
 
 
