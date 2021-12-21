@@ -1,0 +1,512 @@
+# options$text
+# options$value
+# options$selected
+# options$elements[[2]]$clickElement()
+# options$elements
+# rm(empresa)
+# USUARIO
+username<-remote_driver$findElement(using = "id", value = "txtUsuario")
+username$sendKeysToElement(list("ABA"))
+# PASSWORD
+psswd<-remote_driver$findElement(using = "id",value = "txtClave")
+psswd$sendKeysToElement(list("72722698","\uE007"))
+# ahora que ya entre a la pagina solo falta hacer click en  descargar excel
+# DESCARGAR EXCEL
+# PARA SELECCIONAR EL EXCEL AL PARECER CUALQUIERA DE ESTOS COMANDOS ME ES VALIDO, MAS ADELANTE PROBAR DE NUEVO
+Sys.sleep(7)
+downloadexcel<-remote_driver$findElement(using = "id",value = "ctl00_ContentPlaceHolder1_ibtn_Excel")
+# downloadexcel<-remote_driver$findElement(using = "class",value = "Boton")
+# downloadexcel<-remote_driver$findElement(using = 'xpath', "//select[@id='ddlEmpresa']/option[@value='1']")
+# downloadexcel<-remote_driver$findElement(using = "xpath",value = "//*[@id='ctl00_ContentPlaceHolder1_ibtn_Excel']")
+# downloadexcel<-remote_driver$findElement(using = "css",value = "html.js.canvas.canvastext.geolocation.crosswindowmessaging.no-websqldatabase.indexeddb.hashchange.historymanagement.draganddrop.websockets.rgba.hsla.multiplebgs.backgroundsize.borderimage.borderradius.boxshadow.opacity.cssanimations.csscolumns.cssgradients.no-cssreflections.csstransforms.csstransforms3d.csstransitions.video.audio.localstorage.sessionstorage.webworkers.no-applicationcache.svg.smil.svgclippaths.fontface body.sidebar-left.chart div#container form#aspnetForm div#page div#page-content.container_12 div#contenidoss div.grid_12 div div.box div.div_bloque input#ctl00_ContentPlaceHolder1_ibtn_Excel.Boton")
+# downloadexcel<-remote_driver$findElement(using = 'xpath', "//select[@id='ddlEmpresa']/option[@value='1']")
+# downloadexcel<-remote_driver$findElement(using = "name",value = "ctl00$ContentPlaceHolder1$ibtn_Excel")
+# downloadexcel<-remote_driver$findElement(using = "partial link text",value = "../App_Themes/COMERCIO/Images/botones/ico_excel.png")
+# downloadexcel<-remote_driver$findElement(using = 'xpath', "//*[@id='ctl00_ContentPlaceHolder1_ibtn_Excel']")
+# downloadexcel$getElementLocation()
+# downloadexcel<-remote_driver$mouseMoveToLocation()
+Sys.sleep(2)
+# CLICK DESCARGA EXCEL: ESTAMOS USANDO OTRO METODO DISTINTO AL CLICK ELEMENT ANTERIOR, AHORA ESTAMOS HACIENDO OTRO METODO, SITUANDO EL MOUSE EN LA COORDENADA Y DANDOLE CLICK
+remote_driver$mouseMoveToLocation(webElement = downloadexcel)
+remote_driver$click(buttonId = "RIGHT")
+# CON ESTO HASTA AQUI YA DEBERIA ESTAR DESCARGADO EL EXCEL
+# gracias a este paquete pude leer el excel, ya que de otra forma no podia
+# install.packages("XLConnect")
+library(XLConnect)
+library(dplyr)
+Sys.sleep(3)
+data <- readWorksheetFromFile(paste("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),day(today()),".xls"), sheet = "FacturacionMetronic",
+startRow = 6,
+startCol = 1)
+library(lubridate)
+data <- readWorksheetFromFile(paste("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),day(today()),".xls"), sheet = "FacturacionMetronic",
+startRow = 6,
+startCol = 1)
+data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),day(today()),".xls"), sheet = "FacturacionMetronic",
+startRow = 6,
+startCol = 1)
+# retirando las columnas que eran merge de las otras
+data<-data %>% select(-Col6,-Col12)
+data<-data %>% filter(Periodo=="202111")
+data<-data %>% filter(Periodo=="202111")
+data3<-data2 %>% filter(Artículo!=c("MACUVIT X 60 CAPSULAS"))
+data2<-data %>% filter(Artículo!=c("MACUVIT X 60 CAPSULAS"))
+data2<-data %>% filter(Artículo!=c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001"))
+data2<-data %>% filter(Artículo!=c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001"))
+data2<-data %>% filter(Artículo!=c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001"))
+View(data2)
+data2<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
+rm(data2)
+names(data)
+# borrando de columna Vendedor = OFICINA
+data<-data %>% filter(!(Vendedor %in% c("OFICINA")))
+View(data)
+# borrando de columna Vendedor = OFICINA
+data<-data %>% filter(!(Vendedor %in% c("OFICINA")))
+data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),day(today()),".xls"), sheet = "FacturacionMetronic",
+startRow = 6,
+startCol = 1)
+Sys.sleep(4)
+# retirando las columnas que eran merge de las otras
+data<-data %>% select(-Col6,-Col12)
+# seleccionando data del periodo 2021
+data<-data %>% filter(Periodo=="202111")
+# borrando los valores de articulo iguales a productos covid
+data<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
+nrow( data %>% filter(Vendedor=="OFICINA"))
+nrow( data %>% filter(Vendedor!="OFICINA"))
+# borrando de columna Vendedor = OFICINA
+data2<-data %>% filter(!(Vendedor %in% c("OFICINA")))
+# borrando los valores de articulo iguales a productos covid
+data<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
+# borrando de columna Vendedor = OFICINA
+data2<-data %>% filter(!(Vendedor %in% c("OFICINA")))
+data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),day(today()),".xls"), sheet = "FacturacionMetronic",
+startRow = 6,
+startCol = 1)
+Sys.sleep(4)
+# retirando las columnas que eran merge de las otras
+data<-data %>% select(-Col6,-Col12)
+# seleccionando data del periodo 2021
+data<-data %>% filter(Periodo=="202111")
+# borrando los valores de articulo iguales a productos covid
+data<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
+# borrando de columna Vendedor = OFICINA
+data2<-data %>% filter(!(Vendedor %in% c("OFICINA")))
+# creando columna fuente que diga METRONIC
+data3<-data2 %>% mutate(FUENTE="METRONIC")
+View(data3)
+paste0(year(today()),month(today()))
+paste0("01/",month(today()),"/",year(today()))
+# creando columna periodo con el primer dia del mes a actualizar
+data4<-data3 %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
+View(data4)
+data5<-data4 %>% mutate(ELIMINAR="")
+View(data5)
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data7<-data6 %>% mutate(list("ppuni")="")
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data7<-data6 %>% mutate(c("ppuni")="")
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data7<-data6 %>% mutate(c("ppuni")=="")
+# creando columna DSCZONA
+data6<-data5 %>% mutate(DSCZONA="")
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data7<-data6 %>% mutate(c("ppuni")=="")
+View(data7)
+rm(data7)
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data7<-data6 %>% mutate(ppuni="") %>% mutate(ppsol="")
+View(data7)
+data7
+rm(data7)
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data7<-data6 %>% mutate(ppuni="") %>% mutate(ppsol="") %>% mutate(flag="") %>% mutate(dpto="") %>% mutate(dist="") %>% mutate(prov="")
+View(data7)
+data7 %>% select(FUENTE,Periodo,Nro.Doc,Fecha)
+data7 %>% select(FUENTE,Periodo,Nro.Doc,Fecha)
+View(data7)
+# seleccionando solo las columnas que nos interesan
+data8<-data7 %>%
+select(FUENTE,Periodo,Nro.Doc,Fecha,Ruc,ELIMINAR,Cliente,Condición,Artículo,Cant,Subtotal,DSCZONA,Zona,Vendedor,ppuni,ppsol,flag,dpto,dist,prov)
+View(data8)
+# seleccionando solo las columnas que nos interesan
+data8<-data7 %>%
+select(FUENTE,Periodo,Nro.Doc,Fecha,Ruc,ELIMINAR,Cliente,Condición,Artículo,Cant,Subtotal,DSCZONA,Zona,Vendedor,ppuni,ppsol,flag,dpto,dist,prov)
+View(data8)
+library(readxl)
+maestrolansier<-read_xlsx("maestrolansier")
+maestrolansier<-read_xlsx("maestrolansier.xlsx")
+View(maestrolansier)
+artdesvalid<-c(data8$Artículo,maestrolansier$`artdsc VALID`)
+artdesvalid<-as.data.frame( c(data8$Artículo,maestrolansier$`artdsc VALID`))
+View(artdesvalid)
+artdesvalid<-as.data.frame(data8$Artículo,maestrolansier$`artdsc VALID`)
+artdesvalid<-as.data.frame(data8$Artículo,maestrolansier$`artdsc VALID`)
+View(artdesvalid)
+rm(artdesvalid)
+ifelse(data8$Artículo=maestrolansier$METRONIC,"si","no")
+ifelse(data8$Artículo==maestrolansier$METRONIC,"si","no")
+df1<-data8 %>% select(Artículo)
+df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`)
+# solucion 2
+df1 %>%
+left_join(df2, by = c("Artículo" = "METRONIC"))
+df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`,TIPO,equipo)
+df1<-data8 %>% select(Artículo)
+# solucion 2
+ArtdesValid<-df1 %>%
+left_join(df2, by = c("Artículo" = "METRONIC"))
+View(ArtdesValid)
+# solucion 2
+ArtdesValid<-df2 %>%
+left_join(df1, by = c("Artículo" = "METRONIC"))
+# solucion 2
+ArtdesValid<-df2 %>%
+left_join(df1, by = c("Artículo" = "METRONIC"))
+# solucion 2
+ArtdesValid<-df2 %>%
+left_join(df1, by = c("METRONIC" = "Artículo"))
+View(ArtdesValid)
+# solucion 1
+merge(x = df1, y = df2, by.x = "Artículo", by.y = "METRONIC", all.x = TRUE)
+# solucion 1
+ArtdesValid<-merge(x = df1, y = df2, by.x = "Artículo", by.y = "METRONIC", all.x = TRUE)
+View(ArtdesValid)
+# solucion 1
+ArtdesValid<-merge(x = df1, y = df2, by.x = "Artículo", by.y = "artdsc VALID", all.x = TRUE)
+View(ArtdesValid)
+# solucion 2
+ArtdesValid<-df1 %>%
+inner_join(df2, by = c("METRONIC" = "Artículo"))
+# solucion 2
+ArtdesValid<-df1 %>%
+inner_join(df2, by = c("METRONIC" = "Artículo"))
+# solucion 2
+ArtdesValid<-df1 %>%
+inner_join(df2, by ="METRONIC" )
+colnames(df2)<-c("Artículo","artdesvalid")
+df2
+# solucion 2
+ArtdesValid<-df1 %>%
+inner_join(df2, by ="Artículo" )
+inner_join(df1,df2,by="Artículo")
+inner_join(df2,df1,by="Artículo")
+left_join(df2,df1,by="Artículo")
+left_join(df1,df2,by="Artículo")
+# solucion 2
+merge(x=df1,y=df2,by = "Artículo")
+# solucion 2
+ga<-merge(x=df1,y=df2,by = "Artículo")
+View(ga)
+# solucion 3
+inner_join(mutate(df1, k = 1), mutate(df2, k = 1), by = "k")
+df1<-data8 %>% select(Artículo)
+df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`,TIPO,equipo)
+# solucion 3
+inner_join(mutate(df1, k = 1), mutate(df2, k = 1), by = "k")
+# solucion 3
+ga<-inner_join(mutate(df1, k = 1), mutate(df2, k = 1), by = "k")
+View(ga)
+ga<-merge(x = df1, y = df2, by = NULL)
+ga<-merge(x = df1, y = df2, by = NULL)
+rm(ga)
+ga<-merge(x = df1, y = df2, by = NULL)
+rm(ga)
+ga<-merge(x = df1, y = df2, all = TRUE)
+dput(head(df1))
+colnames(df2)<-c("Artículo","artdesvalidvalid","tipo","equipo")
+View(df2)
+df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`,TIPO,equipo)
+colnames(df2)<-c("Artículo","artdesvalidvalid","tipo","equipo")
+colnames(df2)<-c("Artículo","artdesvalidvalid","tipo","equipo")
+# solucion 4
+dplyr::left_join(df1, distinct(df2), by = "Artículo")
+# solucion 4
+ga<-dplyr::left_join(df1, distinct(df2), by = "Artículo")
+View(ga)
+# solucion 4
+ga<-dplyr::left_join(df2, distinct(df1), by = "Artículo")
+View(ga)
+# solucion 4
+ga<-dplyr::left_join(df1, distinct(df2), by = "Artículo")
+View(ga)
+# solucion 4
+ga<-dplyr::right_join(df1, distinct(df2), by = "Artículo")
+View(ga)
+View(data8)
+View(maestrolansier)
+View(df2)
+# solucion 4
+ga<-dplyr::inner_join(df1, distinct(df2), by = "Artículo")
+# solucion 4
+ga<-dplyr::left_join(df1, distinct(df2), by = "Artículo")
+View(ga)
+library(readxl)
+data<-read.csv(file = "C:\Users\LBarrios\Downloads\VTADTOFTEPL1638909124374_1522.csv")
+data<-read.csv(file = "C:\\Users\LBarrios\Downloads\VTADTOFTEPL1638909124374_1522.csv")
+data<-read.csv(file = "C:\Users\LBarrios\Downloads\VTADTOFTEPL1638909124374_1522.csv")
+data<-read.csv(file = "C:\Users\\LBarrios\Downloads\VTADTOFTEPL1638909124374_1522.csv")
+data<-read.csv(file = "C:/Users/LBarrios/Downloads/VTADTOFTEPL1638909124374_1522.csv")
+View(data)
+library(dplyr)
+library(lubridate)
+today()-1)
+today()-1
+day(today())-1
+paste0(day(today())-1,month(today()),year(today())
+paste0(day(today())-1,month(today()),year(today()))
+paste0(day(today())-1,month(today()),year(today()))
+paste0(day(today())-1,month(today()),year(today()))
+paste0(day(today())-1,"/",month(today()),"/",year(today()))
+paste0(ifelse(day(today())-1<10,paste0("0",day(today())-1),day(today())-1),
+"/",
+month(today()),
+"/",
+year(today()))
+data %>% mutate(fecha_update=(paste0(ifelse(day(today())-1<10,paste0("0",day(today())-1),day(today())-1),
+"/",
+month(today()),
+"/",
+year(today()))))
+paste0("01",month(day()),year(day()))
+paste0("01",month(day()),year(day()))
+paste0("01",month(today()),year(today()))
+paste0("01","/",month(today()),"/",year(today()))
+# -------------formato stock-----------
+# fecha_update
+# COD_LOCAL
+# DESCRIPCION
+# INVENTARIO.u.
+# INVENTARIO.S.
+# -----------formato ventas-----------
+# periodo
+# fecha_update
+# DESCRIPCION
+names(data)
+# DESCRIPCION
+# INVENTARIO.u.
+# INVENTARIO.S.
+# -----------formato ventas-----------
+# periodo
+# fecha_update
+# DESCRIPCION
+# COD_LOCAL
+# VTA_PERIODO_UNID
+# VALOR_VTA_PUB_PERIODO_S
+data %>% select(fecha_update)
+data %>% mutate(fecha_update=(paste0(ifelse(day(today())-1<10,paste0("0",day(today())-1),day(today())-1),
+"/",
+month(today()),
+"/",
+year(today()))))
+data %>% mutate(periodo=paste0("01","/",month(today()),"/",year(today()))) #esta fecha esta para el mes actual, si se desea algun mes en especial se debe cambiar
+data<-data %>% mutate(fecha_update=(paste0(ifelse(day(today())-1<10,paste0("0",day(today())-1),day(today())-1),
+"/",
+month(today()),
+"/",
+year(today()))))
+data<-data %>% mutate(periodo=paste0("01","/",month(today()),"/",year(today()))) #esta fecha esta para el mes actual, si se desea algun mes en especial se debe cambiar
+# DESCRIPCION
+# INVENTARIO.u.
+# INVENTARIO.S.
+# -----------formato ventas-----------
+# periodo
+# fecha_update
+# DESCRIPCION
+# COD_LOCAL
+# VTA_PERIODO_UNID
+# VALOR_VTA_PUB_PERIODO_S
+data %>% select(fecha_update)
+# DESCRIPCION
+# INVENTARIO.u.
+# INVENTARIO.S.
+# -----------formato ventas-----------
+# periodo
+# fecha_update
+# DESCRIPCION
+# COD_LOCAL
+# VTA_PERIODO_UNID
+# VALOR_VTA_PUB_PERIODO_S
+data %>% select(fecha_update,COD_LOCAL,DESCRIPCION,INVENTARIO.u.,INVENTARIO.S.)
+# DESCRIPCION
+# INVENTARIO.u.
+# INVENTARIO.S.
+# -----------formato ventas-----------
+# periodo
+# fecha_update
+# DESCRIPCION
+# COD_LOCAL
+# VTA_PERIODO_UNID
+# VALOR_VTA_PUB_PERIODO_S
+stock<-data %>% select(fecha_update,COD_LOCAL,DESCRIPCION,INVENTARIO.u.,INVENTARIO.S.)
+venta<-data %>% select(PERIODO,fecha_update,COD_LOCAL,VTA_PERIODO_UNID,VALOR_VTA_PUB_PERIODO_S)
+View(stock)
+View(venta)
+write.table(stock, file = "stockb2b.txt", sep = "\t",
+row.names = FALSE , col.names = NA)
+write.table(stock, file = "stockb2b.txt", sep = "\t",
+row.names = FALSE )
+write.table(venta, file = "ventab2b.txt",
+sep = "\t",
+row.names = FALSE )
+venta<-data %>% select(periodo,fecha_update,COD_LOCAL,VTA_PERIODO_UNID,VALOR_VTA_PUB_PERIODO_S)
+write.table(venta, file = "ventab2b.txt",
+sep = "\t",
+row.names = FALSE )
+venta<-data %>% select(periodo,fecha_update,DESCRIPCION,COD_LOCAL,VTA_PERIODO_UNID,VALOR_VTA_PUB_PERIODO_S)
+write.table(venta, file = "ventab2b.txt",
+sep = "\t",
+row.names = FALSE )
+View(venta)
+class(data$periodo)
+data<-data %>% mutate(as.Date( periodo=paste0("01","/",month(today()),"/",year(today())))) #esta fecha esta para el mes actual, si se desea algun mes en especial se debe cambiar
+data<-data %>% mutate(as.Date( periodo=paste0("01","/",month(today()),"/",year(today()))),"%d%b%Y") #esta fecha esta para el mes actual, si se desea algun mes en especial se debe cambiar
+class(data$periodo)
+as_date(data$periodo)
+as_date(data$periodo,"%d%b%Y")
+as_date(data$periodo,"%d%m%Y")
+View(data)
+as_date(data$periodo,"%d/%m/%Y")
+as_date(data$periodo,"%m/%d/%Y")
+as_date(data$periodo,"%m/%d/%Y")
+as.Date(data$periodo,"%d/%m/%Y")
+data<-data %>% mutate(as.Date( periodo=paste0("01","/",month(today()),"/",year(today())),"%d/%m/%Y")) #esta fecha esta para el mes actual, si se desea algun mes en especial se debe cambiar
+data<-data %>% mutate(periodo=as.Date( paste0("01","/",month(today()),"/",year(today())),"%d/%m/%Y")) #esta fecha esta para el mes actual, si se desea algun mes en especial se debe cambiar
+class(data$periodo)
+data<-data %>% mutate(fecha_update=(as.Date(paste0(ifelse(day(today())-1<10,paste0("0",day(today())-1),day(today())-1),
+"/",
+month(today()),
+"/",
+year(today())),"%d/%m/%Y")))
+class(data$fecha_update)
+View(data)
+str(data)
+as.numeric(data$DESCRIPCION)
+View(venta)
+# DESCRIPCION
+# INVENTARIO.u.
+# INVENTARIO.S.
+# -----------formato ventas-----------
+# periodo
+# fecha_update
+# DESCRIPCION
+# COD_LOCAL
+# VTA_PERIODO_UNID
+# VALOR_VTA_PUB_PERIODO_S
+stock<-data %>% select(fecha_update,COD_LOCAL,DESCRIPCION,INVENTARIO.u.,INVENTARIO.S.)
+venta<-data %>% select(periodo,fecha_update,DESCRIPCION,COD_LOCAL,VTA_PERIODO_UNID,VALOR_VTA_PUB_PERIODO_S)
+write.table(venta, file = "ventab2b.txt",
+sep = "\t",
+row.names = FALSE )
+library(readr)
+write_tsv(venta, path = "venta.txt")
+write_tsv(venta, file = "venta.txt")
+# DESCRIPCION
+# INVENTARIO.u.
+# INVENTARIO.S.
+# -----------formato ventas-----------
+# periodo
+# fecha_update
+# DESCRIPCION
+# COD_LOCAL
+# VTA_PERIODO_UNID
+# VALOR_VTA_PUB_PERIODO_S
+stock<-data %>% select(fecha_update,COD_LOCAL,DESCRIPCION,INVENTARIO.u.,INVENTARIO.S.)
+write_tsv(stock, file = "stockb2b.txt")
+venta<-data %>% select(periodo,fecha_update,DESCRIPCION,COD_LOCAL,VTA_PERIODO_UNID,VALOR_VTA_PUB_PERIODO_S)
+write_tsv(venta, file = "ventab2b.txt")
+View(venta)
+na.exclude(venta$VALOR_VTA_PUB_PERIODO_S)
+write_tsv(stock, file = "stockb2b.txt", na = "")
+write_tsv(venta, file = "ventab2b.txt",na = "")
+write_tsv(stock, file = "stockb2b.txt", na = " ")
+write_tsv(venta, file = "ventab2b.txt",na = " ")
+write.table(venta,file = "ventab2b.txt",na="",dec = ",",row.names = FALSE)
+write.table(venta,file = "ventab2b.txt",na="",dec = ",",row.names = FALSE,col="\r")
+write.table(venta,file = "ventab2b.txt",na="",dec = ",",row.names = FALSE,eol="\r")
+write.table(venta,file = "ventab2b.txt",na="",row.names = FALSE,eol="\r")
+summary(stock)
+dataagro <- read_xlsx("excel1.xlsx")
+library(readxl)
+dataagro <- read_xlsx("excel1.xlsx")
+library(RSelenium)
+library(rvest)
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(lubridate)
+# este pagina es la que nos brinda la parte de application/vnd.... , esto es necesario ponerlo para que el buscador de firefox no nos pregunte si queremos
+# guardar o abrir el archivo, porque eso mata todo el codigo, mediante este codigo, especifico para documentos con terminación xls, podemos saltar el pop-up
+# y descargar directamente en la carpeta de descargas o downloads de la página.
+# https://www.freeformatter.com/mime-types-list.html
+driver <- rsDriver(browser = c("firefox"),port = 4440L, extraCapabilities = makeFirefoxProfile(list(
+"browser.helperApps.neverAsk.saveToDisk"="application/vnd.ms-excel")
+))
+remote_driver <- driver[["client"]]
+Sys.sleep(6)
+remote_driver$navigate("http://www.lansierweb.com:9300/FACTURACION/FacturacionMetronic.aspx?JER=divMenuLBTR_1_01.02")
+# con esto hacemos click en LABORATORIOS LANSIER S.A.C
+# FORMA GENIAL DE SELECCIONAR MEDIANTE ID Y VALUE, NO SABIA HACERLA ANTES
+empresa<- remote_driver$findElement(using = 'xpath', "//select[@id='ddlEmpresa']/option[@value='1']")
+empresa$clickElement()
+# USUARIO
+username<-remote_driver$findElement(using = "id", value = "txtUsuario")
+username$sendKeysToElement(list("ABA"))
+# PASSWORD
+psswd<-remote_driver$findElement(using = "id",value = "txtClave")
+downloadexcel<-remote_driver$findElement(using = "id",value = "ctl00_ContentPlaceHolder1_ibtn_Excel")
+# PASSWORD
+psswd<-remote_driver$findElement(using = "id",value = "txtClave")
+psswd$sendKeysToElement(list("72722698","\uE007"))
+# ahora que ya entre a la pagina solo falta hacer click en  descargar excel
+# DESCARGAR EXCEL
+# PARA SELECCIONAR EL EXCEL AL PARECER CUALQUIERA DE ESTOS COMANDOS ME ES VALIDO, MAS ADELANTE PROBAR DE NUEVO
+Sys.sleep(7)
+downloadexcel<-remote_driver$findElement(using = "id",value = "ctl00_ContentPlaceHolder1_ibtn_Excel")
+# CLICK DESCARGA EXCEL: ESTAMOS USANDO OTRO METODO DISTINTO AL CLICK ELEMENT ANTERIOR, AHORA ESTAMOS HACIENDO OTRO METODO, SITUANDO EL MOUSE EN LA COORDENADA Y DANDOLE CLICK
+remote_driver$mouseMoveToLocation(webElement = downloadexcel)
+remote_driver$click(buttonId = "RIGHT")
+# gracias a este paquete pude leer el excel, ya que de otra forma no podia
+# install.packages("XLConnect")
+# install.packages("lookup")
+# install.packages("plyr")
+# install.packages("qdapTools")
+library(qdapTools)
+library(plyr)
+library(lookup)
+library(XLConnect)
+library(dplyr)
+library(readxl)
+Sys.sleep(3)
+data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),ifelse(day(today())<10,paste0("0",day(today())),day(today())),".xls"), sheet = "FacturacionMetronic",
+startRow = 6,
+startCol = 1)
+# retirando las columnas que eran merge de las otras
+data<-data %>% select(-Col6,-Col12)
+# seleccionando data del periodo 202111 o segun corresponda
+data<-data %>% filter(Periodo==paste0(year(today()),month(today())))
+# borrando los valores de articulo iguales a productos covid
+data<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
+# borrando de columna Vendedor = OFICINA
+data<-data %>% filter(!(Vendedor %in% c("OFICINA")))
+# creando columna fuente que diga METRONIC
+data<-data %>% mutate(FUENTE="METRONIC")
+# creando columna periodo con el primer dia del mes a actualizar
+data<-data %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
+# insertando columna ELIMINAR en vacio
+data<-data %>% mutate(ELIMINAR="")
+# creando columna DSCZONA
+data<-data %>% mutate(DSCZONA="")
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data<-data %>% mutate(ppuni="") %>% mutate(ppsol="") %>% mutate(flag="") %>% mutate(dpto="") %>% mutate(dist="") %>% mutate(prov="")
+# seleccionando solo las columnas que nos interesan
+data2<-data %>%
+select(FUENTE,Periodo,Nro.Doc,Fecha,Ruc,ELIMINAR,Cliente,Condición,Artículo,Cant,Subtotal,DSCZONA,Zona,Vendedor,ppuni,ppsol,flag,dpto,dist,prov)
+library(readxl)
+write.xlsx(data2,"metronic.xlsx")
+a
+library(readxl)
+# hasta aqui puedo decir que esta automatizado, de aqui en adelante falta arreglar el buscarv con el maestrolansier
+write.xlsx(data2,"metronic.xlsx")
+install.packages("readxl")

@@ -1,14 +1,16 @@
 library(RSelenium)
 library(rvest)
-library(tidyverse)
+library(dplyr)
 library(lubridate)
 library(readxl)
 library(lubridate)
+library(writexl)
 Sys.sleep(10)
 # este pagina es la que nos brinda la parte de application/vnd.... , esto es necesario ponerlo para que el buscador de firefox no nos pregunte si queremos 
 # guardar o abrir el archivo, porque eso mata todo el codigo, mediante este codigo, especifico para documentos con terminación xls, podemos saltar el pop-up
 # y descargar directamente en la carpeta de descargas o downloads de la página.
 # https://www.freeformatter.com/mime-types-list.html
+# a veces se tiene que cambiar el nombre del port cuand no conecta al servidor remoto
 driver <- rsDriver(browser = c("firefox"),port = 4440L, extraCapabilities = makeFirefoxProfile(list(
   "browser.helperApps.neverAsk.saveToDisk"="application/vnd.ms-excel")
 ))
@@ -74,13 +76,21 @@ remote_driver$click(buttonId = "RIGHT")
 
 # gracias a este paquete pude leer el excel, ya que de otra forma no podia
 # install.packages("XLConnect")
+# install.packages("lookup")
+# install.packages("plyr")
+# install.packages("qdapTools")
+library(qdapTools)
+library(plyr)
+library(lookup)
 library(XLConnect)
 library(dplyr)
 library(readxl)
 Sys.sleep(3)
-data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),day(today()),".xls"), sheet = "FacturacionMetronic",
+data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),ifelse(day(today())<10,paste0("0",day(today())),day(today())),".xls"), sheet = "FacturacionMetronic",
                               startRow = 6,
                               startCol = 1)
+
+
 Sys.sleep(4)
 # retirando las columnas que eran merge de las otras
 data<-data %>% select(-Col6,-Col12)
@@ -95,44 +105,128 @@ data<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","
 data<-data %>% filter(!(Vendedor %in% c("OFICINA")))
 
 # creando columna fuente que diga METRONIC
-data3<-data2 %>% mutate(FUENTE="METRONIC")
+data<-data %>% mutate(FUENTE="METRONIC")
 
 # creando columna periodo con el primer dia del mes a actualizar
-data4<-data3 %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
+data<-data %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
 
 # insertando columna ELIMINAR en vacio
-data5<-data4 %>% mutate(ELIMINAR="")
+data<-data %>% mutate(ELIMINAR="")
 
 # creando columna DSCZONA 
-data6<-data5 %>% mutate(DSCZONA="")
+data<-data %>% mutate(DSCZONA="")
 
 # creando ppuni ppsol flag dpto dist prov que estaran vacias
-data7<-data6 %>% mutate(ppuni="") %>% mutate(ppsol="") %>% mutate(flag="") %>% mutate(dpto="") %>% mutate(dist="") %>% mutate(prov="")
+data<-data %>% mutate(ppuni="") %>% mutate(ppsol="") %>% mutate(flag="") %>% mutate(dpto="") %>% mutate(dist="") %>% mutate(prov="")
 
 # seleccionando solo las columnas que nos interesan
-data8<-data7 %>%
-  select(FUENTE,Periodo,Nro.Doc,Fecha,Ruc,ELIMINAR,Cliente,Condición,Artículo,Cant,Subtotal,DSCZONA,Zona,Vendedor,ppuni,ppsol,flag,dpto,dist,prov)
-
-
-maestrolansier<-read_xlsx("maestrolansier.xlsx")
-
-
-
-
-df1<-data8 %>% select(Artículo)
+# DATA2 TIENE EL FORMATO QUE SE CARGARIA AL SQL
+data2<-data %>%
+  select(FUENTE,periodo,Nro.Doc,Fecha,Ruc,ELIMINAR,Cliente,Condición,Artículo,Cant,Subtotal,DSCZONA,Zona,Vendedor,ppuni,ppsol,flag,dpto,dist,prov)
+# con esto leo el maestro lansier con el cual cruzare mi data
+maestrolansier <- read_xlsx("maestrolansier.xlsx")
+# aqui selecciono lo que voy a cruzar
+# df1<-data2 %>% select(Artículo)
 df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`,TIPO,equipo)
-colnames(df2)<-c("Artículo","artdesvalidvalid","tipo","equipo")
-# solucion 1
-ArtdesValid<-merge(x = df1, y = df2, by.x = "Artículo", by.y = "METRONIC", all.x = TRUE)
+# con esto quito los espacios adelante y detrás del artdesvalid Y LOS ARTICULOS
+# df1$Artículo<-trimws(df1$Artículo,"b")
+# df2$Artículo<-trimws(df2$Artículo,"b")
+# df2$artdesvalidvalid<-trimws(df2$artdesvalidvalid,"b")
+# # probando el mismo proceso pero directamente para data 2 y ya no para df1
+data2$Artículo<-trimws(data2$Artículo,"b")
+data2$Artículo<-trimws(data2$Artículo,"b")
+df2$artdesvalid<-trimws(df2$artdesvalid,"b")
+# cambio el nombre a df2 para que coincida el nombre de la columna articulo para poder hacer el merge
+colnames(df2)<-c("Artículo","artdesvalid","tipo","equipo")
+# cruzando para obtener los validados, tipo y equipo
+ArtdesValid2<-merge(x = data2, y = df2, by.x = "Artículo", all.x = TRUE)
 
-# solucion 2
-ga<-merge(x=df1,y=df2,by = "Artículo")
-# solucion 3
-ga<-inner_join(mutate(df1, k = 1), mutate(df2, k = 1), by = "k")
+data3<-ArtdesValid2 %>%
+  select(FUENTE,periodo,Nro.Doc,Fecha,Ruc,ELIMINAR,Cliente,Condición,Artículo,artdesvalid,Cant,Subtotal,DSCZONA,Zona,Vendedor,tipo,equipo,ppuni,ppsol,flag,dpto,dist,prov)
 
-ga<-merge(x = df1, y = df2, all = TRUE)
-rm(ga)
-# solucion 4
-ga<-dplyr::left_join(df1, distinct(df2), by = "Artículo")
+# creando el excel con la data ya formateada
+# es fundamental utilizar la funcion write_xlsx ya que esta nos permite sobre escribir el excel sin tener que borrarlo previamente
+write_xlsx(data3,"metronic.xlsx")
+# LISTO TERMINADO
+#------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------#
+# ------------ con trimws puedo quitar los espacios iniciales y finales de un texto --------- #
+#---------------------------------------------------------------------------------------------#
+# x<- "  texto con espacios "
+# trimws(x,"b")
+# x<-c(" asds ", " asdasdas","sdasdas ","    asdasd  asd   asd    ","  asdsa  2  ")
+# trimws(x,"b")
+rm(list = ls())
 
-# solucion 5
+#-----------------------------------------------------------------------------#
+# ya esta automatizado todo para metronic desde la descarga hasta el formateo #
+#-----------------------------------------------------------------------------#
+
+# #--------------------
+# # solucion 2
+# ga<-merge(x=df1,y=df2,by = "Artículo")
+# rm(ga)
+# # solucion 3
+# ga<-inner_join(mutate(df1, k = 1), mutate(df2, k = 1), by = "k")
+# 
+# ga<-merge(x = df1, y = df2, all = TRUE)
+# rm(ga)
+# # solucion 4
+# ga<-dplyr::left_join(df1, distinct(df2), by = "Artículo")
+# 
+# # solucion 5
+# 
+# rm(df1)
+# # using lookup
+# df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`)
+# colnames(df2)<-c("Artículo","artdesvalid")
+# 
+# df1$articulovalidado<-lookup(df1$Artículo,df2$Artículo,df2$artdesvalid)
+# 
+# 
+# 
+# 
+# 
+# 
+# # practicando
+# hous <- data.frame(HouseType=c("Semi","Single","Row","Single","Apartment","Apartment","Row"),
+#                    HouseTypeNo=c(1,2,3,2,4,4,3))
+# 
+# largetable <- data.frame(HouseType = sample(unique(hous$HouseType), 1000, replace = TRUE))
+# 
+# largetable$num1 <- lookup(largetable$HouseType, hous$HouseType, hous$HouseTypeNo)
+# 
+# ##----------------------------------------------------
+# firstLookup <- function(data, lookup, by, select = setdiff(colnames(lookup), by)) {
+#   # Merges data to lookup using first row per unique combination in by.
+#   unique.lookup <- lookup[!duplicated(lookup[, by]), ]
+#   res <- merge(data, unique.lookup[, c(by, select)], by = by, all.x = T)
+#   return (res)
+# }
+# 
+# baseFirst <- firstLookup(df1, df2, by = "Artículo")
+# ##---------------------------------------------------------------------
+# validado<-df2 %>%
+#   distinct() %>%
+#   right_join(df1, by = 'Artículo')
+# 
+# left_join(df1,df2,by="Artículo",keep=TRUE)
+# 
+# merge(df1,df2,by = "Artículo")
+# 
+# plyr1<-join(df1,df2,by="Artículo")
+# 
+# df1[, 1]%1% df2
+# 
+# match(df1$Artículo,df2$Artículo)
+# 
+# semi_join(df1,df2,by="Artículo")
+# tropi<-df1[1,1]
+# df1 %>% filter(Artículo==df1[,]) %>% left_join(df2)
+# df2 %>% filter(Artículo==tropi)
+# # tal parece que el problema es que en algunos productos hay espacios al final o al inicio, por eso no reconoce
+# 
+# 
+# avalidar<-gsub(" ","",df1$Artículo)
+# df2$Artículo<-gsub(" ","",df2$Artículo)
+
