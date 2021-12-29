@@ -2,6 +2,9 @@ library(RSelenium)
 library(rvest)
 library(tidyverse)
 library(lubridate)
+library(dplyr)
+library(writexl)
+library(readxl)
 
 driver <- rsDriver(browser = c("firefox"),port = 4447L)
 remote_driver <- driver[["client"]]
@@ -89,6 +92,8 @@ detalle3 <- read_xlsx("C:\\Users\\LBarrios\\Downloads\\detalle (3).xlsx")
 # combinando los 4 departamentos descargados de dimexa
 data<-rbind(detalle,detalle1,detalle2,detalle3)
 rm(detalle,detalle1,detalle2,detalle3)
+# cambiando el formato de la fecha
+data$FECHA<-paste0(ifelse(day(data$FECHA)<10,paste0(0,day(data$FECHA)),day(data$FECHA)),"/",month(data$FECHA),"/",year(data$FECHA))
 # creando columna fuente que diga METRONIC
 data<-data %>% mutate(FUENTE="DIMEXA")
 
@@ -122,6 +127,7 @@ data2$ELIMINAR[BRUNYNROW]="E"
 data2$ELIMINAR[MERCEDESNROW]="E"
 # data$ELIMINAR[BRUNYNROW]
 # write_xlsx(data,"dimexa.xlsx")
+# LEYENDO DATA NECESARIA PARA VALIDAR
 maestrolansier <- read_xlsx("maestrolansier.xlsx")
 # selecciono solo lo que voy a querer de maestro lansier que para este caso seria DIMEXA artdesvalid tipo y equipo
 df2<-maestrolansier %>% select(DIMEXA,`artdsc VALID`,TIPO,equipo)
@@ -145,24 +151,94 @@ data_maestro<-data_maestro %>% mutate(LLAVE=paste0(DEPARTAMENTO,DISTRITO))
 # TRAEMOS LA DATA DE LOCALIDADESDIMEXA
 localidadesdimexa <- read_xlsx("localidadesdimexa.xlsx")
 localidadesdimexa<-localidadesdimexa %>% select(LLAVE,ZONA)
+localidadesdimexa$LLAVE<-trimws(localidadesdimexa$LLAVE,"b")
+localidadesdimexa$ZONA<-trimws(localidadesdimexa$ZONA,"b")
+data_maestro$LLAVE<-trimws(data_maestro$LLAVE,"b")
 # por alguna razon con allx=true da mas filas de las que existen, habra que verificar de donde agrega más
 # mientras que con allx=false trae el mismo numero de filas que hay en data_maestro que al parecer
 # deberia ser lo correcto, hay que revisar ello
-ArtdesValid2<-merge(x = data_maestro, y=localidadesdimexa, by.x = "LLAVE", all.x = TRUE)
-ArtdesValid3<-merge(x = data_maestro, y=localidadesdimexa, by.x = "LLAVE", all.x = FALSE)
-write_xlsx(ArtdesValid3,"allxequalfalse.xlsx")
-write_xlsx(ArtdesValid2,"allxequaltrue.xlsx")
+data_maestro_localidades<-merge(x = data_maestro, y=localidadesdimexa, by.x = "LLAVE", all.x = TRUE)
+# TRAEMOS LA DATA DE VENDEDORES PARA CRUZARLA MEDIANTE EL RUC
+vendedoresdimexa<-read_xlsx("vendedoresdimexa.xlsx")
+vendedoresdimexa<-vendedoresdimexa %>% select(ruc,flag)
+colnames(vendedoresdimexa)<-c("RUC CLIENTE","DSCVEND")
+# combinando y validando con la data de vendedoresdimexa para traer el dscvend o flag como está en vendedoresdimexa
+dimexa<-merge(data_maestro_localidades,vendedoresdimexa,by.x = "RUC CLIENTE",all.x = TRUE)
+# dandole orden a nuestro excel
+dimexa<-dimexa %>%
+  select(FUENTE,periodo,`NUMERO FACTURA`,FECHA,`RUC CLIENTE`,ELIMINAR,
+         `NOMBRE CLIENTE`,`TIPO DOCUMENTO`,`NOMBRE PRODUCTO`,artdesvalid,
+         CANTIDAD,`SUB TOTAL`,DSCVEND,ZONA,`NOMBRE VENDEDOR`,tipo,equipo,ppuni,ppsol,flag,DEPARTAMENTO,DISTRITO,PROVINCIA)
+# PARA RUC 20514304921 HACIENDO LOS CAMBIOS DEPENDIENDO DE LA ZONA A QUE DSCVEND PERTENECE
+nrowintifarma<-which(dimexa$`RUC CLIENTE` == "20514304921", arr.ind=TRUE)
+zonaintifarma<-dimexa$ZONA[nrowintifarma]
+ifelse(zonaintifarma=="LIMA CALLAO",dimexa$DSCVEND[nrowintifarma]<-"AB",
+       ifelse(zonaintifarma=="LIMA OESTE",dimexa$DSCVEND[nrowintifarma]<-"KM",
+              ifelse(zonaintifarma=="LIMA ESTE",dimexa$DSCVEND[nrowintifarma]<-"KM",
+                     ifelse(zonaintifarma=="LIMA NORTE",dimexa$DSCVEND[nrowintifarma]<-"JA",
+                            ifelse(zonaintifarma=="LIMA SUR",dimexa$DSCVEND[nrowintifarma]<-"JA",
+                                   )))))
+# PARA EL OTRO RUC 20543001075
+nrowotroruc<-which(dimexa$`RUC CLIENTE`=="20543001075",arr.ind = TRUE)
+zonanrowotroruc<-dimexa$ZONA[nrowotroruc]
+xifelse(zonanrowotroruc=="LIMA CALLAO",dimexa$DSCVEND[nrowotroruc]<-"AB",
+       ifelse(zonanrowotroruc=="LIMA OESTE",dimexa$DSCVEND[nrowotroruc]<-"KM",
+              ifelse(zonanrowotroruc=="LIMA ESTE",dimexa$DSCVEND[nrowotroruc]<-"KM",
+                     ifelse(zonanrowotroruc=="LIMA NORTE",dimexa$DSCVEND[nrowotroruc]<-"JA",
+                            ifelse(zonanrowotroruc=="LIMA SUR",dimexa$DSCVEND[nrowotroruc]<-"JA",
+                            )))))
+# probando...
+# encontré que la solución es la asignación mediante "<-", caso contrario me da una verificacion de verdad o falsedad
+dimexa$DSCVEND[nrowintifarma]
+dimexa$ZONA[nrowintifarma]
+# ahora le decimos que para esas filas ponga una E en la columna Eliminar
+data2$ELIMINAR[BRUNYNROW]="E"
+data2$ELIMINAR[MERCEDESNROW]="E"
+dimexa$ZONA[nrowintifarma]="LIMA OESTE"
+
+# generando el xlsx con la data para subir al visor o sql
+write_xlsx(dimexa,"dimexa.xlsx")
+# limpiando nuestra ventana
+rm(list=ls())
+
+#-----------------------------------------------------------------------------------------------------------#
+# el problema con vendedoresdimexa es que hay varios archivos que tienen repetido por lo tanto              #
+# no se sabe cual es el correcto, cual seria la solucion?, si lo elimino no estoy seguro de cual tomar como #
+# valor verdadero para validar                                                                              #
+#-----------------------------------------------------------------------------------------------------------#
+
+# problemas para vendedores
+# hay dos empresas con estes ruc en el archivo vendedoresdimexa lo cual puede generara un error
+# 20504680976 tiene 2 repetidos
+# 20514304921 hay 4 repetidas
+# 20510146345 hay 2 repetidas
+# 20606023074 hay 2 repetidas
+# 20600113519 hay 2 repetidas
+# 20548480214 hay 2 repetidas
 
 
 
 
 
-
-
-
-
-
-
+#-----------------------------------------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------------------------------------#
+# PROBLEMA QUE HABIA OCURRIDO PROBLEMA QUE HABIA OCURRIDO PROBLEMA QUE HABIA OCURRIDO PROBLEMA QUE HABIA OCURRIDO # 
+#-----------------------------------------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------------------------------------#
+#                                                                                                                 #
+# en la data original encontramos esto                                                                            #
+# solo existe un registro 146269, sin embargo el merge para localidades con all.x=true lo duplica por             #
+# alguna razón                                                                                                    #
+# solo existen dos registros para 146270 pero ocurre el mismo problema que para 146269                            #
+# para 378923 si son 3 los registros  
+# en localidadesdimexa habia dos repetidos de huancavelicaacobambaacobamba ese tal vez duplicaba para los dos el registro
+# osea en los archivos para cruzar no puede haber dos iguales en la llave                                         #
+#                                                                                                                 #
+#-----------------------------------------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------------------------------------#
+# PROBLEMA QUE HABIA OCURRIDO PROBLEMA QUE HABIA OCURRIDO PROBLEMA QUE HABIA OCURRIDO PROBLEMA QUE HABIA OCURRIDO # 
+#-----------------------------------------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------------------------------------#
 
 
 
