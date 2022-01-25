@@ -9,10 +9,25 @@ library(qdapTools)
 library(plyr)
 library(lookup)
 library(XLConnect)
-
+# con esto leemos la data de una fecha en específico dado que si no tenemos la data de hoy pero
+# queremos cargar la data que nos pasaron de otro día copiamos el nombre del archivo en vez de lo nuestro
 data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE DE VENTAS LANSIER 22.01.22.xls", sheet = "DATA",skip = 4)
-# eliminado la fila de totales
-totalrow<-which(data$VALOR=="203541.4974")
+
+
+
+# con esta leemos la data de hoy
+# data<-read_xls(paste0("C:\\Users\\LBarrios\\Downloads\\AVANCE DE VENTAS LANSIER ",
+#                       day(today()),".",
+# ifelse(month(today())<10,paste0("0",month(today())),month(today())),
+# ".22.xls"), sheet = "DATA",skip = 4)
+
+
+
+
+# eliminado la fila de totales ya que es la última fila siempre la eliminamos
+totalrow<-nrow(data)
+
+# totalrow<-which(data$VALOR=="203541.4974")
 data<-data[-totalrow,]
 # cambiando formato de la fecha
 data$FECHA<-paste0(ifelse(day(data$FECHA)<10,paste0(0,day(data$FECHA)),day(data$FECHA)),
@@ -83,7 +98,7 @@ localidadesdifarlib$ZONA<-trimws(localidadesdifarlib$ZONA,"b")
 data_maestro$COMBINACION<-trimws(data_maestro$COMBINACION,"b")
 
 # VALIDANDO ZONAS NUEVAS
-localidadesnuevascastillo<-data_maestro[!data_maestro$COMBINACION %in% localidadesdifarlib$COMBINACION,]
+localidadesnuevasdifarlib<-data_maestro[!data_maestro$COMBINACION %in% localidadesdifarlib$COMBINACION,]
 write_xlsx(localidadesnuevasdifarlib,"localidadesnuevasdifarlib.xlsx")
 
 # AQUI MANUALMENTE SE DEBE PREGUNTAR AL SEÑOR RICARDO A QUE ZONAS PERTENECEN ESAS NUEVAS LOCALIDADES, UNA VEZ AGREGADAS

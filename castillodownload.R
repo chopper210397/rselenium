@@ -8,7 +8,7 @@ library(qdapTools)
 library(plyr)
 library(lookup)
 library(XLConnect)
-
+# especificamos los col_types porque la columna del total viene con formato posixct asi que debemos especificarle que es numeric
 data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE_LINEA_125.xls",skip = 1,
                col_types = c("text","text","text","date","text","text","text","text","text","text","text"
                              ,"text","text","text","numeric","numeric"))
@@ -58,6 +58,7 @@ data2$`Dsc Producto`<-trimws(data2$`Dsc Producto`,"b")
 df2$`Dsc Producto`<-trimws(df2$`Dsc Producto`,"b")
 df2$artdesvalid<-trimws(df2$artdesvalid,"b")
 
+
 # PRODUCTOS NUEVOS ARTDESVALID
 productosnuevoscastillo<-data2[!data2$`Dsc Producto` %in% df2$`Dsc Producto`,]
 write_xlsx(productosnuevoscastillo,"productosnuevoscastillo.xlsx")
@@ -76,12 +77,23 @@ localidadescastillo$Dist<-trimws(localidadescastillo$Dist,"b")
 localidadescastillo$ZONA<-trimws(localidadescastillo$ZONA,"b")
 data_maestro$Dist<-trimws(data_maestro$Dist,"b")
 
+# convitiendo distritos a minusculas y escogiendo los distintos
+localidadescastillo<-localidadescastillo %>%
+  distinct(tolower( Dist), .keep_all = TRUE) %>% select(ZONA,`tolower(Dist)`)
+colnames(localidadescastillo)<-c("ZONA","Dist")
+
+data_maestro$Dist<-tolower(data_maestro$Dist)
 # VALIDANDO ZONAS NUEVAS
-localidadesnuevascastillo<-data_maestro[!data_maestro$Dist %in% localidadescastillo$Dist,]
+# PROBLEMA HALLADO: Las localides nuevas castillo son demasiadas porque al momento de hacer buscarV no esta encontrado casi nada
+# ya que R no toma como igual una mayuscula y una minuscula  a diferencia de EXCEL.
+# por lo tanto se debe poner a minuscula/mayuscula al menos para el cruce
+# data_maestro$Dist[853]="villasalvajeje"
+localidadesnuevascastillo<-data_maestro[!toupper(data_maestro$Dist) %in% toupper(localidadescastillo$Dist),]
 write_xlsx(localidadesnuevascastillo,"localidadesnuevascastillo.xlsx")
 
+
 # AQUI MANUALMENTE SE DEBE PREGUNTAR AL SEÑOR RICARDO A QUE ZONAS PERTENECEN ESAS NUEVAS LOCALIDADES, UNA VEZ AGREGADAS
-# EN EL EXCEL DE LOCALIDADES DIMEXA YA SE DEBE REGRESAR A R Y CORRER ESTA VEZ EL PROGRAMA COMPLETO
+# EN EL EXCEL DE LOCALIDADES DIMEXA YA SE DEBE REGRESAR A R Y CORRE                                                     R ESTA VEZ EL PROGRAMA COMPLETO
 data_maestro_localidades<-merge(x = data_maestro, y=localidadescastillo, by.x = "Dist", all.x = TRUE)
 
 data_maestro_localidades<-data_maestro_localidades %>%
