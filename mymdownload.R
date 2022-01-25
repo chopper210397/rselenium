@@ -114,11 +114,14 @@ data<-read_xlsx(path = paste0("C:\\Users\\LBarrios\\Downloads\\LANSIER-",
                         ".xlsx" ))
 # names(data)
 
-# creando columna fuente que diga METRONIC
+# creando columna fuente que diga M&M
 data<-data %>% mutate(FUENTE="M&M")
 
 # creando columna periodo con el primer dia del mes a actualizar
-data<-data %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
+data<-data %>% mutate(periodo=paste0("01/",
+                                     ifelse(month(today())<10,paste0("0",month(today())),month(today())),
+                                     "/",
+                                     year(today())))
 
 # insertando columna ELIMINAR en vacio
 data<-data %>% mutate(ELIMINAR="")
@@ -156,12 +159,19 @@ colnames(df2)<-c("DESCRIPCION","artdesvalid","tipo","equipo")
 data2$DESCRIPCION<-trimws(data2$DESCRIPCION,"b")
 df2$DESCRIPCION<-trimws(df2$DESCRIPCION,"b")
 df2$artdesvalid<-trimws(df2$artdesvalid,"b")
-
+# validando productos
+productosnuevosmym<-data2[!data2$DESCRIPCION %in% df2$DESCRIPCION,]
+write_xlsx(productosnuevosmym,"productosnuevosmym.xlsx")
 # ----------------------------------------------------- #
 # ---CRUCE DE INFORMACIÓN PARA OBTENER LOS VALIDADOS--- #
 # ----------------------------------------------------- #
 # cruzando para obtener los validados, tipo y equipo
 ArtdesValid2<-merge(x = data2, y = df2, by.x = "DESCRIPCION", all.x = TRUE)
+
+# validando que esten las mismas localidades
+localidadesnuevasmym<-ArtdesValid2[!ArtdesValid2$LOCALIDAD %in% localidadesmym$LOCALIDAD,]
+write_xlsx(localidadesnuevasmym,"localidadesnuevasmym.xlsx")
+#
 # CRUZANDO PARA OBTENER LA LOCALIDAD
 ArtdesValid3<-merge(x = ArtdesValid2, y=localidadesmym, by.x = "LOCALIDAD", all.x = TRUE)
 ArtdesValid3<-ArtdesValid3 %>%

@@ -86,7 +86,11 @@ library(XLConnect)
 library(dplyr)
 library(readxl)
 Sys.sleep(3)
-data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",year(today()),month(today()),ifelse(day(today())<10,paste0("0",day(today())),day(today())),".xls"), sheet = "FacturacionMetronic",
+data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",
+                                     year(today()),
+                                     ifelse(month(today())<10,paste0("0",month(today())),month(today())) ,
+                                     ifelse(day(today())<10,paste0("0",day(today())),day(today())),".xls"),
+                              sheet = "FacturacionMetronic",
                               startRow = 6,
                               startCol = 1)
 
@@ -96,10 +100,12 @@ Sys.sleep(4)
 data<-data %>% select(-Col6,-Col12)
 
 # seleccionando data del periodo 202111 o segun corresponda
-data<-data %>% filter(Periodo==paste0(year(today()),month(today())))
+data<-data %>% filter(Periodo==paste0(year(today()),
+                                      ifelse(month(today())<10,paste0("0",month(today())),month(today()))))
 
 # borrando los valores de articulo iguales a productos covid
-data<-data %>% filter(!(Artículo %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
+data<-data %>% filter(!(Artículo %in%
+                          c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004","VEDMLN001")))
 
 # borrando de columna Vendedor = OFICINA
 data<-data %>% filter(!(Vendedor %in% c("OFICINA")))
@@ -108,7 +114,9 @@ data<-data %>% filter(!(Vendedor %in% c("OFICINA")))
 data<-data %>% mutate(FUENTE="METRONIC")
 
 # creando columna periodo con el primer dia del mes a actualizar
-data<-data %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
+data<-data %>% mutate(periodo=paste0("01/",
+                                     ifelse(month(today())<10,paste0("0",month(today())),month(today())),
+                                     "/",year(today())))
 
 # insertando columna ELIMINAR en vacio
 data<-data %>% mutate(ELIMINAR="")
@@ -139,6 +147,9 @@ df2$artdesvalid<-trimws(df2$artdesvalid,"b")
 # cambio el nombre a df2 para que coincida el nombre de la columna articulo para poder hacer el merge
 colnames(df2)<-c("Artículo","artdesvalid","tipo","equipo")
 # cruzando para obtener los validados, tipo y equipo
+# probando si hay productos diferentes
+productosnuevosmetronic<-data2[!data2$Artículo %in% df2$Artículo,]
+#
 ArtdesValid2<-merge(x = data2, y = df2, by.x = "Artículo", all.x = TRUE)
 
 data3<-ArtdesValid2 %>%

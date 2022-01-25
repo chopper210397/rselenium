@@ -5,6 +5,7 @@ library(lubridate)
 library(dplyr)
 library(writexl)
 library(readxl)
+library(RODBC)
 
 driver <- rsDriver(browser = c("firefox"),port = 4447L)
 remote_driver <- driver[["client"]]
@@ -93,12 +94,19 @@ detalle3 <- read_xlsx("C:\\Users\\LBarrios\\Downloads\\detalle (3).xlsx")
 data<-rbind(detalle,detalle1,detalle2,detalle3)
 rm(detalle,detalle1,detalle2,detalle3)
 # cambiando el formato de la fecha
-data$FECHA<-paste0(ifelse(day(data$FECHA)<10,paste0(0,day(data$FECHA)),day(data$FECHA)),"/",month(data$FECHA),"/",year(data$FECHA))
+data$FECHA<-paste0(ifelse(day(data$FECHA)<10,paste0(0,day(data$FECHA)),day(data$FECHA)),
+                   "/",
+                  ifelse(month(data$FECHA)<10,paste0(0,month(data$FECHA)),month(data$FECHA))  ,
+                  "/",
+                  year(data$FECHA))
 # creando columna fuente que diga METRONIC
 data<-data %>% mutate(FUENTE="DIMEXA")
 
 # creando columna periodo con el primer dia del mes a actualizar
-data<-data %>% mutate(periodo=paste0("01/",month(today()),"/",year(today())))
+data<-data %>% mutate(periodo=paste0("01/",
+                                     ifelse(month(today())<10,paste0("0",month(today())),month(today())),
+                                     "/",
+                                     year(today())))
 
 # insertando columna ELIMINAR en vacio
 data<-data %>% mutate(ELIMINAR="")
@@ -137,6 +145,12 @@ colnames(df2)<-c("NOMBRE PRODUCTO","artdesvalid","tipo","equipo")
 data2$`NOMBRE PRODUCTO`<-trimws(data2$`NOMBRE PRODUCTO`,"b")
 df2$`NOMBRE PRODUCTO`<-trimws(df2$`NOMBRE PRODUCTO`,"b")
 df2$artdesvalid<-trimws(df2$artdesvalid,"b")
+
+# EL SIGUIENTE PASO ES OPCIONAL, PORQUE IGUAL EN EL MERGE SIGUIENTE NO SE TOMARÁ EN CUENTA LOS PRODUCTOS QUE NO SE CRUCEN
+# antes de cruzar debemos validar que esten los mismo productos y cuales no reconoce
+# productosnuevos<-data2[!data2$`NOMBRE PRODUCTO` %in% df2$`NOMBRE PRODUCTO`,]
+# lo hallado vendría a ser lo que esta en nuestra data descargada y no esta en los productos de nuestro maestro
+
 # ----------------------------------------------------- #
 # ---CRUCE DE INFORMACIÓN PARA OBTENER LOS VALIDADOS--- #
 # ----------------------------------------------------- #
@@ -157,11 +171,27 @@ data_maestro$LLAVE<-trimws(data_maestro$LLAVE,"b")
 # por alguna razon con allx=true da mas filas de las que existen, habra que verificar de donde agrega más
 # mientras que con allx=false trae el mismo numero de filas que hay en data_maestro que al parecer
 # deberia ser lo correcto, hay que revisar ello
+
+# VALIDANDO QUE HAYA LAS MISMAS LOCALIDADES TANTO EN NUESTRO EXCEL DESCARGADO COMO EN EL MAESTRO DE LOCALIDADES, 
+# SI NO ESTAN DEBERÁN AGREGARSE PARA QUE PUEDAN CRUZARSE CORRECTAMENTE LUEGO.
+localidadesnuevasdimexa<-data_maestro[!data_maestro$LLAVE %in% localidadesdimexa$LLAVE,]
+write_xlsx(localidadesnuevasdimexa,"localidadesnuevasdimexa.xlsx")
+#
+
+# AQUI MANUALMENTE SE DEBE PREGUNTAR AL SEÑOR RICARDO A QUE ZONAS PERTENECEN ESAS NUEVAS LOCALIDADES, UNA VEZ AGREGADAS
+# EN EL EXCEL DE LOCALIDADES DIMEXA YA SE DEBE REGRESAR A R Y CORRER ESTA VEZ EL PROGRAMA COMPLETO
+
+
 data_maestro_localidades<-merge(x = data_maestro, y=localidadesdimexa, by.x = "LLAVE", all.x = TRUE)
 # TRAEMOS LA DATA DE VENDEDORES PARA CRUZARLA MEDIANTE EL RUC
 vendedoresdimexa<-read_xlsx("vendedoresdimexa.xlsx")
 vendedoresdimexa<-vendedoresdimexa %>% select(ruc,flag)
 colnames(vendedoresdimexa)<-c("RUC CLIENTE","DSCVEND")
+# quitando los espacios en blanco delante y detrás
+data_maestro_localidades$`RUC CLIENTE`<-trimws(data_maestro_localidades$`RUC CLIENTE`,"b")
+vendedoresdimexa$`RUC CLIENTE`<-trimws(vendedoresdimexa$`RUC CLIENTE`,"b")
+
+
 # combinando y validando con la data de vendedoresdimexa para traer el dscvend o flag como está en vendedoresdimexa
 dimexa<-merge(data_maestro_localidades,vendedoresdimexa,by.x = "RUC CLIENTE",all.x = TRUE)
 # dandole orden a nuestro excel
@@ -181,7 +211,7 @@ ifelse(zonaintifarma=="LIMA CALLAO",dimexa$DSCVEND[nrowintifarma]<-"AB",
 # PARA EL OTRO RUC 20543001075
 nrowotroruc<-which(dimexa$`RUC CLIENTE`=="20543001075",arr.ind = TRUE)
 zonanrowotroruc<-dimexa$ZONA[nrowotroruc]
-xifelse(zonanrowotroruc=="LIMA CALLAO",dimexa$DSCVEND[nrowotroruc]<-"AB",
+ifelse(zonanrowotroruc=="LIMA CALLAO",dimexa$DSCVEND[nrowotroruc]<-"AB",
        ifelse(zonanrowotroruc=="LIMA OESTE",dimexa$DSCVEND[nrowotroruc]<-"KM",
               ifelse(zonanrowotroruc=="LIMA ESTE",dimexa$DSCVEND[nrowotroruc]<-"KM",
                      ifelse(zonanrowotroruc=="LIMA NORTE",dimexa$DSCVEND[nrowotroruc]<-"JA",
@@ -195,6 +225,22 @@ dimexa$ZONA[nrowintifarma]
 data2$ELIMINAR[BRUNYNROW]="E"
 data2$ELIMINAR[MERCEDESNROW]="E"
 dimexa$ZONA[nrowintifarma]="LIMA OESTE"
+
+# agregamos esta columna numero 24 para que se pueda subir la data directamente al sql
+# dado que realmente nuestra data tiene 23 columnas pero en el sql hay 24
+# dimexa[,24]=""
+# colnames(dimexa)<-c("fuente","periodo","idfactura","fecha","ruc","eliminar","clienom",
+#                     "tipocondi","artdes","artdesValid","cant","subtotal","dsczonadet","dsczona",
+#                     "dscven","tipoart","colorequi","ppuni","ppsol","flag","dpto","distrito","provincia","categorizacion")
+# #subiendo directamente al sql
+# #conectando a ventalansier
+# sqluis<-odbcConnect("SQLuis",uid = "sa",pwd = "Comercial.2020")
+# # borrando el mes actual para que no se repita la data
+# sqlQuery(sqluis,paste0("delete from Venta_Lansier where periodo='01/",
+#                        ifelse(month(today())<10,paste0(0,month(today())),month(today())),
+#                        "/",year(today()),"'") )
+# # agregando la data de dimexa de este periodo al sql
+# sqlSave(sqluis,dimexa,tablename = "Venta_Lansier",rownames = FALSE,append = TRUE,fast =FALSE)
 
 # generando el xlsx con la data para subir al visor o sql
 write_xlsx(dimexa,"dimexa.xlsx")
@@ -240,10 +286,14 @@ rm(list=ls())
 #-----------------------------------------------------------------------------------------------------------------#
 #-----------------------------------------------------------------------------------------------------------------#
 
-
-
-
-
+# a<-as.data.frame(c("luis","pedro","pier","natalia","luisce", "evi", "pamela"))
+# b<-as.data.frame(c("luis","pedro","pier","natalia","luisce", "evi", "pierito"))
+# names(a)<-"a"
+# names(b)<-"b"
+# 
+# lol<-a[!a$a %in% b$b,]
+# nrow<-which(a$a==lol, arr.ind=TRUE)
+# a[nrow,1]
 
 
 

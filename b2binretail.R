@@ -49,7 +49,9 @@ sqlb2b<-odbcConnect("SQLb2b",uid = "sa",pwd = "Comercial.2020")
 # para stock
 sqlQuery(sqlb2b,"delete from StockInretail")
 # para venta
-sqlQuery(sqlb2b, paste0("delete from VentaInretail where periodo='01/",month(today()),"/",year(today()),"'"))
+sqlQuery(sqlb2b, paste0("delete from VentaInretail where periodo='01/",
+                        ifelse(month(today())<10,paste0(0,month(today())),month(today())) ,
+                        "/",year(today()),"'"))
 # SUBIENDO EL STOCK AL SQL
 sqlSave(sqlb2b,stock,tablename = "StockInretail",rownames = FALSE,append = TRUE,fast = FALSE)
 # SUBIENDO LA VENTA AL SQL
@@ -62,7 +64,7 @@ sqlSave(sqlb2b,venta,tablename = "VentaInretail",rownames = FALSE,append = TRUE,
 # OJO:  si pongo fast equal true deberia cargar mas rapido la data pero no me permite porque
 # hay algun problema con los formatos de data o algo asi, si se puede mejorar a futuro seria genial, ya
 # que podria cargar toda la data de un solo porraso, sino igual la subida tarda algo de 7 minutos aprox.
-
+rm(list=ls())
 
 
 
