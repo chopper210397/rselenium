@@ -1,0 +1,111 @@
+# castillo
+library(readxl)
+library(dplyr)
+library(lubridate)
+library(readr)
+library(RODBC)
+library(qdapTools)
+library(plyr)
+library(lookup)
+library(XLConnect)
+# especificamos los col_types porque la columna del total viene con formato posixct asi que debemos especificarle que es numeric
+data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE_LINEA_125.xls",skip = 1,
+               col_types = c("text","text","text","date","text","text","text","text","text","text","text"
+                             ,"text","text","text","numeric","numeric"))
+
+# cambiando formato de la fecha
+data$Fecha<-paste0(ifelse(day(data$Fecha)<10,paste0(0,day(data$Fecha)),day(data$Fecha)),
+                   "-",
+                   ifelse(month(data$Fecha)<10,paste0(0,month(data$Fecha)),month(data$Fecha))  ,
+                   "-",
+                   year(data$Fecha))
+
+# creando columna fuente que diga METRONIC
+data<-data %>% mutate(FUENTE="CASTILLO")
+
+# creando columna periodo con el primer dia del mes a actualizar
+data<-data %>% mutate(periodo=paste0("01/",
+                                     ifelse(month(today())<10,paste0("0",month(today())),month(today())),
+                                     "/",
+                                     year(today())))
+
+# insertando columna ELIMINAR en vacio
+data<-data %>% mutate(ELIMINAR="")
+
+# creando columna DSCZONA 
+data<-data %>% mutate(DSCVEND="")
+
+# creando ppuni ppsol flag dpto dist prov que estaran vacias
+data<-data %>% mutate(ppuni="") %>% mutate(ppsol="") %>% mutate(flag="") %>% mutate(TIPO="") 
+
+data2<-data %>%
+  select(FUENTE,periodo,Factura,Fecha,RUC,ELIMINAR,
+         RazComercial,TIPO,`Dsc Producto`,
+         cantidad,Total,DSCVEND,Vendedor,ppuni,ppsol,flag,Dept,Dist,Prov)
+
+
+
+
+
+# LEYENDO DATA NECESARIA PARA VALIDAR
+maestrolansier <- read_xlsx("maestrolansier.xlsx")
+# selecciono solo lo que voy a querer de maestro lansier que para este caso seria DIMEXA artdesvalid tipo y equipo
+df2<-maestrolansier %>% select(CASTILLO,`artdsc VALID`,TIPO,equipo)
+# cambio el nombre a df2 para que coincida el nombre de la columna articulo para poder hacer el merge
+colnames(df2)<-c("Dsc Producto","artdesvalid","tipo","equipo")
+# CON ESTO QUITO LOS ESPACIOS AL COMIENZO Y EL FINAL DE LOS ARTICULOS PORQUE NO PERMITIAN CRUZAR TODO
+data2$`Dsc Producto`<-trimws(data2$`Dsc Producto`,"b")
+df2$`Dsc Producto`<-trimws(df2$`Dsc Producto`,"b")
+df2$artdesvalid<-trimws(df2$artdesvalid,"b")
+
+
+# PRODUCTOS NUEVOS ARTDESVALID
+productosnuevoscastillo<-data2[!data2$`Dsc Producto` %in% df2$`Dsc Producto`,]
+write_xlsx(productosnuevoscastillo,"productosnuevoscastillo.xlsx")
+
+# TRAYENDO ARTDESVALID TIPO Y EQUIPO
+data_maestro<-merge(x = data2, y = df2, by.x = "Dsc Producto", all.x = FALSE)
+
+
+
+
+
+# TRAER DATA LOCALIDADES CASTILLO
+localidadescastillo <- read_xlsx("localidadescastillo.xlsx")
+localidadescastillo<-localidadescastillo %>% select(Dist,ZONA)
+localidadescastillo$Dist<-trimws(localidadescastillo$Dist,"b")
+localidadescastillo$ZONA<-trimws(localidadescastillo$ZONA,"b")
+data_maestro$Dist<-trimws(data_maestro$Dist,"b")
+
+# convitiendo distritos a minusculas y escogiendo los distintos
+localidadescastillo<-localidadescastillo %>%
+  distinct(tolower( Dist), .keep_all = TRUE) %>% select(ZONA,`tolower(Dist)`)
+colnames(localidadescastillo)<-c("ZONA","Dist")
+
+data_maestro$Dist<-tolower(data_maestro$Dist)
+# VALIDANDO ZONAS NUEVAS
+# PROBLEMA HALLADO: Las localides nuevas castillo son demasiadas porque al momento de hacer buscarV no esta encontrado casi nada
+# ya que R no toma como igual una mayuscula y una minuscula  a diferencia de EXCEL.
+# por lo tanto se debe poner a minuscula/mayuscula al menos para el cruce
+# data_maestro$Dist[853]="villasalvajeje"
+localidadesnuevascastillo<-data_maestro[!toupper(data_maestro$Dist) %in% toupper(localidadescastillo$Dist),]
+write_xlsx(localidadesnuevascastillo,"localidadesnuevascastillo.xlsx")
+
+
+# AQUI MANUALMENTE SE DEBE PREGUNTAR AL SEÑOR RICARDO A QUE ZONAS PERTENECEN ESAS NUEVAS LOCALIDADES, UNA VEZ AGREGADAS
+# EN EL EXCEL DE LOCALIDADES DIMEXA YA SE DEBE REGRESAR A R Y CORRE                                                     R ESTA VEZ EL PROGRAMA COMPLETO
+data_maestro_localidades<-merge(x = data_maestro, y=localidadescastillo, by.x = "Dist", all.x = TRUE)
+
+data_maestro_localidades<-data_maestro_localidades %>%
+  select(FUENTE,periodo,Factura,Fecha,RUC,ELIMINAR,RazComercial,TIPO,`Dsc Producto`,artdesvalid,cantidad,
+         Total,DSCVEND,ZONA,Vendedor,tipo,equipo,ppuni,ppsol,flag,Dept,Dist,Prov)
+# ERROR COMÚN: no deberia dar mas registros en data maestro localidades que en data maestro, deberían ser la misma
+# cantidad de observaciones, esto ocurre porque en el archivo fuente hay filas repetidas lo cual esta mal y hace que el programa
+# de errores, revisar esto en el archivo de localidades por lo general esto ocurre ahi porque hay repetidos
+
+# x<-data_maestro[!data_maestro$COMBINACION %in% data_maestro_localidades$COMBINACION,]
+# chequear que siempre data_maestro sea igual a data_maestro_localidades porque sino
+
+write_xlsx(data_maestro_localidades,"castillo.xlsx")
+# limpiando nuestra ventana
+rm(list=ls())
