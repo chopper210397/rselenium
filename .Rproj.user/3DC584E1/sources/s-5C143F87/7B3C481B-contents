@@ -95,11 +95,14 @@ data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",
                               startCol = 1)
 
 
-Sys.sleep(4)
+
 # retirando las columnas que eran merge de las otras
 data<-data %>% select(-Col6,-Col12)
 
-# seleccionando data del periodo 202111 o segun corresponda
+# seleccionando data para CIERRE DE MES ANTERIOR
+# data<-data %>% filter(Periodo==paste0(year(today()),
+#                                       ifelse(month(today())<10,paste0("0",month(today())-1),month(today()))))
+# seleccionando data del periodo ACTUAL
 data<-data %>% filter(Periodo==paste0(year(today()),
                                       ifelse(month(today())<10,paste0("0",month(today())),month(today()))))
 
@@ -140,12 +143,13 @@ df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`,TIPO,equipo)
 # df1$Artículo<-trimws(df1$Artículo,"b")
 # df2$Artículo<-trimws(df2$Artículo,"b")
 # df2$artdesvalidvalid<-trimws(df2$artdesvalidvalid,"b")
+# cambio el nombre a df2 para que coincida el nombre de la columna articulo para poder hacer el merge
+colnames(df2)<-c("Artículo","artdesvalid","tipo","equipo")
 # # probando el mismo proceso pero directamente para data 2 y ya no para df1
 data2$Artículo<-trimws(data2$Artículo,"b")
 data2$Artículo<-trimws(data2$Artículo,"b")
 df2$artdesvalid<-trimws(df2$artdesvalid,"b")
-# cambio el nombre a df2 para que coincida el nombre de la columna articulo para poder hacer el merge
-colnames(df2)<-c("Artículo","artdesvalid","tipo","equipo")
+
 # cruzando para obtener los validados, tipo y equipo
 # probando si hay productos diferentes
 productosnuevosmetronic<-data2[!data2$Artículo %in% df2$Artículo,]

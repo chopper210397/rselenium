@@ -3,24 +3,24 @@
     "path": "C:/Users/LBarrios/Desktop/rselenium/b2binretail.R",
     "project_path": "b2binretail.R",
     "type": "r_source",
-    "hash": "3463550841",
+    "hash": "0",
     "contents": "",
-    "dirty": false,
+    "dirty": true,
     "created": 1643378926364.0,
     "source_on_save": false,
     "relative_order": 1,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "67,0",
-        "scrollLine": "43"
+        "cursorPosition": "86,0",
+        "scrollLine": "62"
     },
     "folds": "",
     "lastKnownWriteTime": 1643561661,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1643561661712,
+    "last_content_update": 1643729200474,
     "read_only": false,
     "read_only_alternatives": []
 }

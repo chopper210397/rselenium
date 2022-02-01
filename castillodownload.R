@@ -9,6 +9,11 @@ library(plyr)
 library(lookup)
 library(XLConnect)
 # especificamos los col_types porque la columna del total viene con formato posixct asi que debemos especificarle que es numeric
+# PARA CIERRE DE MES
+# data<-read_xls("C:\\Users\\LBarrios\\Downloads\\CMES__LINEA__125.xls",skip = 1,
+               # col_types = c("text","text","text","date","text","text","text","text","text","text","text"
+                             # ,"text","text","text","numeric","numeric"))
+
 data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE_LINEA_125.xls",skip = 1,
                col_types = c("text","text","text","date","text","text","text","text","text","text","text"
                              ,"text","text","text","numeric","numeric"))

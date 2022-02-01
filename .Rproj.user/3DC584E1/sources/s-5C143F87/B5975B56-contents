@@ -13,6 +13,18 @@ library(RODBC)
 # trimws(x,"b")
 #--------------------
 data<-read.csv(file = "C:/Users/LBarrios/Downloads/b2binretail.csv")
+#-------------------------------------------- para cierre de mes --------------------------------------------#
+data<-data %>% mutate(fecha_update=(as.Date(paste0(ifelse(day(today())<10,paste0("0",day(today())),day(today())),
+                                                   "/",
+                                                   month(today()),
+                                                   "/",
+                                                   year(today())),"%d/%m/%Y")))
+
+data<-data %>% mutate(periodo=as.Date( paste0("01","/",month(today())-1,"/",year(today())),"%d/%m/%Y")) 
+
+
+
+#-------------------------------------------- para un dia normal --------------------------------------------#
 data<-data %>% mutate(fecha_update=(as.Date(paste0(ifelse(day(today())-1<10,paste0("0",day(today())-1),day(today())-1),
                                                    "/",
                                                    month(today()),
@@ -49,6 +61,13 @@ sqlb2b<-odbcConnect("SQLb2b",uid = "sa",pwd = "Comercial.2020")
 # para stock
 sqlQuery(sqlb2b,"delete from StockInretail")
 # para venta
+# cuando es cierre de mes usar este codigo
+sqlQuery(sqlb2b, paste0("delete from VentaInretail where periodo='01/",
+                        ifelse(month(today())<10,paste0(0,month(today())-1),month(today())-1) ,
+                        "/",year(today()),"'"))
+
+
+# para dia normal usar este codigo
 sqlQuery(sqlb2b, paste0("delete from VentaInretail where periodo='01/",
                         ifelse(month(today())<10,paste0(0,month(today())),month(today())) ,
                         "/",year(today()),"'"))
