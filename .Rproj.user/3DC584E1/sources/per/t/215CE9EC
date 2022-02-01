@@ -1,26 +1,26 @@
 {
-    "id": "B5975B56",
-    "path": "C:/Users/LBarrios/Desktop/rselenium/b2binretail.R",
-    "project_path": "b2binretail.R",
+    "id": "215CE9EC",
+    "path": "C:/Users/LBarrios/Desktop/rselenium/dimexadownload.R",
+    "project_path": "dimexadownload.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "1432272248",
     "contents": "",
     "dirty": false,
-    "created": 1643378926364.0,
+    "created": 1643380065806.0,
     "source_on_save": false,
-    "relative_order": 1,
+    "relative_order": 4,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "67,0",
-        "scrollLine": "43"
+        "cursorPosition": "163,56",
+        "scrollLine": "150"
     },
     "folds": "",
     "lastKnownWriteTime": 1643561661,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1643561661712,
+    "last_content_update": 1643561661826,
     "read_only": false,
     "read_only_alternatives": []
 }
