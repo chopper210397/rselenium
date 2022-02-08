@@ -110,7 +110,17 @@ library(writexl)
 data<-read_xlsx(path = paste0("C:\\Users\\LBarrios\\Downloads\\LANSIER-",
                         year(today()),
                         "-",
-                        ifelse(month(today())==12,"DICIEMBRE","ENERO"),
+                        ifelse(month(today())==12,"DICIEMBRE",
+                               ifelse(month(today())==1,"ENERO",
+                                      ifelse(month(today())==2,"FEBRERO",
+                                             ifelse(month(today())==3,"MARZO",
+                                                    ifelse(month(today())==4,"ABRIL",
+                                                           ifelse(month(today())==5,"MAYO",
+                                                                  ifelse(month(today())==6,"JUNIO",
+                                                                         ifelse(month(today())==7,"JULIO",
+                                                                                ifelse(month(today())==8,"AGOSTO",
+                                                                                       ifelse(month(today())==9,"SETIEMBRE",
+                                                                                              ifelse(month(today())==10,"OCTUBRE","NOVIEMBRE"))))))))))),
                         ".xlsx" ))
 # names(data)
 

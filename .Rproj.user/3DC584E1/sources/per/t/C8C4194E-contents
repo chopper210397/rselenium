@@ -11,8 +11,9 @@ library(lookup)
 library(XLConnect)
 # con esto leemos la data de una fecha en específico dado que si no tenemos la data de hoy pero
 # queremos cargar la data que nos pasaron de otro día copiamos el nombre del archivo en vez de lo nuestro
-data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE DE VENTAS LANSIER 29.01.22.xls", sheet = "DATA",skip = 4)
-
+# data<-read_xls("C:\\Users\\LBarrios\\Downloads\\1. CIERRE DE VENTAS LANSIER - ENERO 2022.xls", sheet = "DATA",skip = 4)
+# PARA FECHA DISTINTA A LA DE HOY
+data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE DE VENTAS LANSIER 05.02.22.xls", sheet = "DATA",skip = 4)
 
 
 # con esta leemos la data de hoy
