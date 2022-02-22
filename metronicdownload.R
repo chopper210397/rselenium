@@ -7,8 +7,8 @@ library(lubridate)
 library(writexl)
 Sys.sleep(10)
 # este pagina es la que nos brinda la parte de application/vnd.... , esto es necesario ponerlo para que el buscador de firefox no nos pregunte si queremos 
-# guardar o abrir el archivo, porque eso mata todo el codigo, mediante este codigo, especifico para documentos con terminación xls, podemos saltar el pop-up
-# y descargar directamente en la carpeta de descargas o downloads de la página.
+# guardar o abrir el archivo, porque eso mata todo el codigo, mediante este codigo, especifico para documentos con terminaciÃ³n xls, podemos saltar el pop-up
+# y descargar directamente en la carpeta de descargas o downloads de la pÃ¡gina.
 # https://www.freeformatter.com/mime-types-list.html
 # a veces se tiene que cambiar el nombre del port cuand no conecta al servidor remoto
 driver <- rsDriver(browser = c("firefox"),port = 4440L, extraCapabilities = makeFirefoxProfile(list(
@@ -137,11 +137,11 @@ data2<-data %>%
 # con esto leo el maestro lansier con el cual cruzare mi data
 maestrolansier <- read_xlsx("maestrolansier.xlsx")
 # aqui selecciono lo que voy a cruzar
-# df1<-data2 %>% select(Artículo)
+# df1<-data2 %>% select(Articulo)
 df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`,TIPO,equipo)
-# con esto quito los espacios adelante y detrás del artdesvalid Y LOS ARTICULOS
-# df1$Artículo<-trimws(df1$Artículo,"b")
-# df2$Artículo<-trimws(df2$Artículo,"b")
+# con esto quito los espacios adelante y detrÃ¡s del artdesvalid Y LOS ARTICULOS
+# df1$ArtÃ­culo<-trimws(df1$ArtÃ­culo,"b")
+# df2$ArtÃ­culo<-trimws(df2$ArtÃ­culo,"b")
 # df2$artdesvalidvalid<-trimws(df2$artdesvalidvalid,"b")
 # cambio el nombre a df2 para que coincida el nombre de la columna articulo para poder hacer el merge
 colnames(df2)<-c("Artículo","artdesvalid","tipo","equipo")
@@ -180,7 +180,7 @@ rm(list = ls())
 
 # #--------------------
 # # solucion 2
-# ga<-merge(x=df1,y=df2,by = "Artículo")
+# ga<-merge(x=df1,y=df2,by = "ArtÃ­culo")
 # rm(ga)
 # # solucion 3
 # ga<-inner_join(mutate(df1, k = 1), mutate(df2, k = 1), by = "k")
@@ -188,16 +188,16 @@ rm(list = ls())
 # ga<-merge(x = df1, y = df2, all = TRUE)
 # rm(ga)
 # # solucion 4
-# ga<-dplyr::left_join(df1, distinct(df2), by = "Artículo")
+# ga<-dplyr::left_join(df1, distinct(df2), by = "ArtÃ­culo")
 # 
 # # solucion 5
 # 
 # rm(df1)
 # # using lookup
 # df2<-maestrolansier %>% select(METRONIC,`artdsc VALID`)
-# colnames(df2)<-c("Artículo","artdesvalid")
+# colnames(df2)<-c("ArtÃ­culo","artdesvalid")
 # 
-# df1$articulovalidado<-lookup(df1$Artículo,df2$Artículo,df2$artdesvalid)
+# df1$articulovalidado<-lookup(df1$ArtÃ­culo,df2$ArtÃ­culo,df2$artdesvalid)
 # 
 # 
 # 
@@ -220,29 +220,28 @@ rm(list = ls())
 #   return (res)
 # }
 # 
-# baseFirst <- firstLookup(df1, df2, by = "Artículo")
+# baseFirst <- firstLookup(df1, df2, by = "ArtÃ­culo")
 # ##---------------------------------------------------------------------
 # validado<-df2 %>%
 #   distinct() %>%
-#   right_join(df1, by = 'Artículo')
+#   right_join(df1, by = 'ArtÃ­culo')
 # 
-# left_join(df1,df2,by="Artículo",keep=TRUE)
+# left_join(df1,df2,by="ArtÃ­culo",keep=TRUE)
 # 
-# merge(df1,df2,by = "Artículo")
+# merge(df1,df2,by = "ArtÃ­culo")
 # 
-# plyr1<-join(df1,df2,by="Artículo")
+# plyr1<-join(df1,df2,by="ArtÃ­culo")
 # 
 # df1[, 1]%1% df2
 # 
-# match(df1$Artículo,df2$Artículo)
+# match(df1$ArtÃ­culo,df2$ArtÃ­culo)
 # 
-# semi_join(df1,df2,by="Artículo")
+# semi_join(df1,df2,by="ArtÃ­culo")
 # tropi<-df1[1,1]
-# df1 %>% filter(Artículo==df1[,]) %>% left_join(df2)
-# df2 %>% filter(Artículo==tropi)
+# df1 %>% filter(ArtÃ­culo==df1[,]) %>% left_join(df2)
+# df2 %>% filter(ArtÃ­culo==tropi)
 # # tal parece que el problema es que en algunos productos hay espacios al final o al inicio, por eso no reconoce
 # 
 # 
-# avalidar<-gsub(" ","",df1$Artículo)
-# df2$Artículo<-gsub(" ","",df2$Artículo)
-
+# avalidar<-gsub(" ","",df1$ArtÃ­culo)
+# df2$ArtÃ­culo<-gsub(" ","",df2$ArtÃ­culo)

@@ -120,7 +120,7 @@ data<-data %>% mutate(ppuni="") %>% mutate(ppsol="") %>% mutate(flag="")
 # seleccionando solo las columnas que nos interesan
 # DATA2 TIENE EL FORMATO QUE SE CARGARIA AL SQL
 # AQUI NO ESTOY PONIENDO ZONA NI DSCVEND NI TIPO NI EQUIPO
-# NI ARTDESVALID PORQUE ESOS SERAN LOS QUE TRAERÉ CON EL MERGE
+# NI ARTDESVALID PORQUE ESOS SERAN LOS QUE TRAERÁN CON EL MERGE
 data2<-data %>%
   select(FUENTE,periodo,`NUMERO FACTURA`,FECHA,`RUC CLIENTE`,ELIMINAR,
          `NOMBRE CLIENTE`,`TIPO DOCUMENTO`,`NOMBRE PRODUCTO`,
@@ -146,14 +146,14 @@ data2$`NOMBRE PRODUCTO`<-trimws(data2$`NOMBRE PRODUCTO`,"b")
 df2$`NOMBRE PRODUCTO`<-trimws(df2$`NOMBRE PRODUCTO`,"b")
 df2$artdesvalid<-trimws(df2$artdesvalid,"b")
 
-# EL SIGUIENTE PASO ES OPCIONAL, PORQUE IGUAL EN EL MERGE SIGUIENTE NO SE TOMARÁ EN CUENTA LOS PRODUCTOS QUE NO SE CRUCEN
+# EL SIGUIENTE PASO ES OPCIONAL, PORQUE IGUAL EN EL MERGE SIGUIENTE NO SE TOMARÃÂ EN CUENTA LOS PRODUCTOS QUE NO SE CRUCEN
 # antes de cruzar debemos validar que esten los mismo productos y cuales no reconoce
 productosnuevosdimexa<-data2[!data2$`NOMBRE PRODUCTO` %in% df2$`NOMBRE PRODUCTO`,]
 write_xlsx(productosnuevosdimexa,"productosnuevosdimexa.xlsx")
-# lo hallado vendría a ser lo que esta en nuestra data descargada y no esta en los productos de nuestro maestro
+# lo hallado vendrÃÂ­a a ser lo que esta en nuestra data descargada y no esta en los productos de nuestro maestro
 
 # ----------------------------------------------------- #
-# ---CRUCE DE INFORMACIÓN PARA OBTENER LOS VALIDADOS--- #
+# ---CRUCE DE INFORMACIÃÂN PARA OBTENER LOS VALIDADOS--- #
 # ----------------------------------------------------- #
 # cruzando para obtener los validados, tipo y equipo
 # ArtdesValid2<-merge(x = data2, y = df2, by.x = "NOMBRE PRODUCTO", all.x = TRUE)
@@ -169,17 +169,17 @@ localidadesdimexa<-localidadesdimexa %>% select(LLAVE,ZONA)
 localidadesdimexa$LLAVE<-trimws(localidadesdimexa$LLAVE,"b")
 localidadesdimexa$ZONA<-trimws(localidadesdimexa$ZONA,"b")
 data_maestro$LLAVE<-trimws(data_maestro$LLAVE,"b")
-# por alguna razon con allx=true da mas filas de las que existen, habra que verificar de donde agrega más
+# por alguna razon con allx=true da mas filas de las que existen, habra que verificar de donde agrega mÃÂ¡s
 # mientras que con allx=false trae el mismo numero de filas que hay en data_maestro que al parecer
 # deberia ser lo correcto, hay que revisar ello
 
 # VALIDANDO QUE HAYA LAS MISMAS LOCALIDADES TANTO EN NUESTRO EXCEL DESCARGADO COMO EN EL MAESTRO DE LOCALIDADES, 
-# SI NO ESTAN DEBERÁN AGREGARSE PARA QUE PUEDAN CRUZARSE CORRECTAMENTE LUEGO.
+# SI NO ESTAN DEBERÃÂN AGREGARSE PARA QUE PUEDAN CRUZARSE CORRECTAMENTE LUEGO.
 localidadesnuevasdimexa<-data_maestro[!data_maestro$LLAVE %in% localidadesdimexa$LLAVE,]
 write_xlsx(localidadesnuevasdimexa,"localidadesnuevasdimexa.xlsx")
 #
 
-# AQUI MANUALMENTE SE DEBE PREGUNTAR AL SEÑOR RICARDO A QUE ZONAS PERTENECEN ESAS NUEVAS LOCALIDADES, UNA VEZ AGREGADAS
+# AQUI MANUALMENTE SE DEBE PREGUNTAR AL SEÃÂOR RICARDO A QUE ZONAS PERTENECEN ESAS NUEVAS LOCALIDADES, UNA VEZ AGREGADAS
 # EN EL EXCEL DE LOCALIDADES DIMEXA YA SE DEBE REGRESAR A R Y CORRER ESTA VEZ EL PROGRAMA COMPLETO
 
 
@@ -188,12 +188,12 @@ data_maestro_localidades<-merge(x = data_maestro, y=localidadesdimexa, by.x = "L
 vendedoresdimexa<-read_xlsx("vendedoresdimexa.xlsx")
 vendedoresdimexa<-vendedoresdimexa %>% select(ruc,flag)
 colnames(vendedoresdimexa)<-c("RUC CLIENTE","DSCVEND")
-# quitando los espacios en blanco delante y detrás
+# quitando los espacios en blanco delante y detrÃÂ¡s
 data_maestro_localidades$`RUC CLIENTE`<-trimws(data_maestro_localidades$`RUC CLIENTE`,"b")
 vendedoresdimexa$`RUC CLIENTE`<-trimws(vendedoresdimexa$`RUC CLIENTE`,"b")
 
 
-# combinando y validando con la data de vendedoresdimexa para traer el dscvend o flag como está en vendedoresdimexa
+# combinando y validando con la data de vendedoresdimexa para traer el dscvend o flag como estÃÂ¡ en vendedoresdimexa
 dimexa<-merge(data_maestro_localidades,vendedoresdimexa,by.x = "RUC CLIENTE",all.x = TRUE)
 # dandole orden a nuestro excel
 dimexa<-dimexa %>%
@@ -223,7 +223,7 @@ dimexa<-dimexa %>%
 
 
 # probando...
-# encontré que la solución es la asignación mediante "<-", caso contrario me da una verificacion de verdad o falsedad
+# encontrÃÂ© que la soluciÃÂ³n es la asignaciÃÂ³n mediante "<-", caso contrario me da una verificacion de verdad o falsedad
 # dimexa$DSCVEND[nrowintifarma]
 # dimexa$ZONA[nrowintifarma]
 # # ahora le decimos que para esas filas ponga una E en la columna Eliminar
@@ -288,7 +288,7 @@ rm(list=ls())
 #                                                                                                                 #
 # en la data original encontramos esto                                                                            #
 # solo existe un registro 146269, sin embargo el merge para localidades con all.x=true lo duplica por             #
-# alguna razón                                                                                                    #
+# alguna razÃÂ³n                                                                                                    #
 # solo existen dos registros para 146270 pero ocurre el mismo problema que para 146269                            #
 # para 378923 si son 3 los registros  
 # en localidadesdimexa habia dos repetidos de huancavelicaacobambaacobamba ese tal vez duplicaba para los dos el registro

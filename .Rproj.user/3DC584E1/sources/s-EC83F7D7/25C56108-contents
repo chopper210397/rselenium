@@ -38,7 +38,7 @@ key<-substr(key,1,4)
 idpasswd<-paste0(key,"i")
 idlogin<-paste0(key,"l")
 
-#enviar contraseña
+#enviar contraseÃ±a
 passwd <- remote_driver$findElement(using = "id",value = idpasswd)
 passwd$clearElement()
 passwd$sendKeysToElement(list("3217"))
@@ -83,7 +83,7 @@ periodo <- remote_driver$findElement(using = "id",value = idperiodo)
 periodo$clickElement()
 
 #click en el mes deseado
-# solo esta configurado para noviembre y diciembre ojo, para el proximo año se debe configurar de nuevo
+# solo esta configurado para noviembre y diciembre ojo, para el proximo aÃ±o se debe configurar de nuevo
 clickmes <- remote_driver$findElement(using = "id",
                                       value = ifelse(month(today())==11,
                                                      idmesnov,
@@ -154,18 +154,18 @@ data2<-data %>%
 #----------------- trayendo data externa para validar y/o cruzar mi data ------------------------#
 # ---------------------------------------------------------------------------------------------- #
 
-# trayendo el excel con todas las localidades para mym con lo cual se cruzará todo
+# trayendo el excel con todas las localidades para mym con lo cual se cruzarÃ¡ todo
 # con esto leo el maestro lansier con el cual cruzare mi data
 maestrolansier <- read_xlsx("maestrolansier.xlsx")
 localidadesmym <- read_xlsx("localidadesmym.xlsx")
 localidadesmym<-localidadesmym %>% select(LOCALIDAD,ZONA)
 # PRIMERO CRUZAMOS CONTRA EL MAESTRO LANSIER
 # aqui selecciono lo que voy a cruzar
-# df1<-data2 %>% select(Artículo)
+# df1<-data2 %>% select(Articulo)
 df2<-maestrolansier %>% select(`M&M`,`artdsc VALID`,TIPO,equipo)
 # cambio el nombre a df2 para que coincida el nombre de la columna articulo para poder hacer el merge
 colnames(df2)<-c("DESCRIPCION","artdesvalid","tipo","equipo")
-# con esto quito los espacios adelante y detrás del artdesvalid Y LOS ARTICULOS
+# con esto quito los espacios adelante y detrÃ¡s del artdesvalid Y LOS ARTICULOS
 data2$DESCRIPCION<-trimws(data2$DESCRIPCION,"b")
 df2$DESCRIPCION<-trimws(df2$DESCRIPCION,"b")
 df2$artdesvalid<-trimws(df2$artdesvalid,"b")
@@ -173,7 +173,7 @@ df2$artdesvalid<-trimws(df2$artdesvalid,"b")
 productosnuevosmym<-data2[!data2$DESCRIPCION %in% df2$DESCRIPCION,]
 write_xlsx(productosnuevosmym,"productosnuevosmym.xlsx")
 # ----------------------------------------------------- #
-# ---CRUCE DE INFORMACIÓN PARA OBTENER LOS VALIDADOS--- #
+# ---CRUCE DE INFORMACIoN PARA OBTENER LOS VALIDADOS--- #
 # ----------------------------------------------------- #
 # cruzando para obtener los validados, tipo y equipo
 ArtdesValid2<-merge(x = data2, y = df2, by.x = "DESCRIPCION", all.x = TRUE)
