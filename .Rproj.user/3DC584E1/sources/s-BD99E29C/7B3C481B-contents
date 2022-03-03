@@ -85,6 +85,9 @@ library(lookup)
 library(XLConnect)
 library(dplyr)
 library(readxl)
+library(writexl)
+library(RODBC)
+
 Sys.sleep(3)
 data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",
                                      year(today()),
@@ -173,6 +176,31 @@ write_xlsx(data3,"metronic.xlsx")
 # x<-c(" asds ", " asdasdas","sdasdas ","    asdasd  asd   asd    ","  asdsa  2  ")
 # trimws(x,"b")
 rm(list = ls())
+
+
+
+data3<-data3 %>% mutate(categorización="")
+# conectando a ventalansier
+sqluis<-odbcConnect("SQLuis",uid = "sa",pwd = "Comercial.2020")
+# borrando el mes actual para que no se repita la data
+sqlQuery(sqluis,paste0("delete from Venta_Lansier where periodo='01/",
+                       ifelse(month(today())<10,paste0(0,month(today())),month(today())),
+                       "/",year(today()),"'","and fuente ='METRONIC'") )
+# agregando la data de METRONIC de este periodo al sql
+sqlSave(sqluis,data3,tablename = "Venta_Lansier",colnames = FALSE,rownames = FALSE,verbose = TRUE,append = TRUE,fast =TRUE, varTypes=columnTypes)
+
+colnames(data3)<-c("fuente","periodo","idfactura","fecha","ruc","eliminar","clienom","tipocondi","artdes","artdesValid","cant","subtotal","dsczonadet","dsczona",
+                   "dscven","tipoart","colorequi","ppuni","ppsol","flag","dpto","distrito","provincia","categorización")
+
+columnTypes <- list(fuente = "VARCHAR(50)", periodo = "date", idfactura = "VARCHAR(50)", fecha = "date", ruc = "varchar(11)",
+                    eliminar ="char(1)",clienom="varchar(150)",tipocondi="varchar(10)",artdes="varchar(150)",artdesValid="varchar(150)",cant="int",
+                    subtotal="float",dsczonadet="varchar(8)", dsczona="varchar(30)",dscven="varchar(60)", tipoart="varchar(5)",
+                    colorequi="varchar(15)",ppuni="int",ppsol="float",flag="char(1)",dpto="varchar(50)", distrito="varchar(50)",provincia="varchar(50)",
+                    categorización="varchar(20)")
+
+sqlSave(myconn2, MainClmDF2, tablename = "##R_Claims_Data", verbose=TRUE, rownames= FALSE, varTypes=columnTypes)
+
+
 
 #-----------------------------------------------------------------------------#
 # ya esta automatizado todo para metronic desde la descarga hasta el formateo #

@@ -246,14 +246,14 @@ dimexa<-dimexa %>%
 # colnames(dimexa)<-c("fuente","periodo","idfactura","fecha","ruc","eliminar","clienom",
 #                     "tipocondi","artdes","artdesValid","cant","subtotal","dsczonadet","dsczona",
 #                     "dscven","tipoart","colorequi","ppuni","ppsol","flag","dpto","distrito","provincia","categorizacion")
-# #subiendo directamente al sql
-# #conectando a ventalansier
+# subiendo directamente al sql
+# conectando a ventalansier
 # sqluis<-odbcConnect("SQLuis",uid = "sa",pwd = "Comercial.2020")
 # # borrando el mes actual para que no se repita la data
 # sqlQuery(sqluis,paste0("delete from Venta_Lansier where periodo='01/",
 #                        ifelse(month(today())<10,paste0(0,month(today())),month(today())),
 #                        "/",year(today()),"'") )
-# # agregando la data de dimexa de este periodo al sql
+# agregando la data de dimexa de este periodo al sql
 # sqlSave(sqluis,dimexa,tablename = "Venta_Lansier",rownames = FALSE,append = TRUE,fast =FALSE)
 
 # generando el xlsx con la data para subir al visor o sql

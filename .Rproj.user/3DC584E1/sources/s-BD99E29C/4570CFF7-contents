@@ -35,6 +35,12 @@ data<-data %>% mutate(periodo=paste0("01/",
                                      "/",
                                      year(today())))
 
+# creando columna PERIODO CIERRE DE MES
+# data<-data %>% mutate(periodo=paste0("01/",
+#                                      ifelse(month(today())<10,paste0("0",month(today())-1),month(today())-1),
+#                                      "/",
+#                                      year(today())))
+
 # insertando columna ELIMINAR en vacio
 data<-data %>% mutate(ELIMINAR="")
 

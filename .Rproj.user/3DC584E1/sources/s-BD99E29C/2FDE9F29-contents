@@ -3,6 +3,7 @@ library(RODBC)
 library(dplyr)
 library(lubridate)
 library(writexl)
+library(readxl)
 # conexion al sql
 sqlcomercial<-odbcConnect("SQLansier",uid = "lv",pwd = "lv.2014c") 
 # trayendo la data de los dos ultimos años de lansier

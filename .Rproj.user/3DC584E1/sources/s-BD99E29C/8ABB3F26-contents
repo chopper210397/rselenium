@@ -21,6 +21,8 @@ library(RODBC)
 library(dplyr)
 library(tidyr)
 library(lubridate)
+library(tidyverse)
+library(plyr)
 # video de youtube para crear la conexion ODBC necesaria para conectarse con R
 # https://youtu.be/7I10VuMi0cI
 
@@ -85,9 +87,8 @@ azullimacallao<-sqlQuery(sqlcomercial,paste0("select subtotal,ppsol,categorizaci
 
 azullimacallao[is.na(azullimacallao)] <- 0
 
-azullimacallao<-azullimacallao %>% 
-  group_by(categorizacion) %>%
-  summarize(ppsol=sum(ppsol),soles=sum(subtotal)) 
+
+azullimacallao<-azullimacallao %>% group_by(categorizacion) %>% summarize(ppsol=sum(ppsol),soles=sum(subtotal)) 
 
 azullimacallao<-azullimacallao %>%
   add_row(soles=sum(azullimacallao$soles),categorizacion="TOTALES",ppsol=sum(azullimacallao$ppsol))
