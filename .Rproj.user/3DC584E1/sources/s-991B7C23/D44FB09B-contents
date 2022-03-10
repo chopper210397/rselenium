@@ -13,13 +13,27 @@ library(writexl)
 library(openxlsx)
 
 # leyendo paul
-datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul")
-# str(datapaul)
-# unique(datapaul$tipocl)
+datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul",
+                    col_types = c("numeric","numeric","text","numeric","text","text","text","text","text","text",
+                                  "numeric","numeric","numeric","numeric","numeric","numeric","text","text","text","text",
+                                  "text","numeric","numeric","text","numeric","text","text","text","text","numeric"
+                                  ,"text","text"))
+
+# datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul")
+
 # seleccionando el periodo del mes anterior para hacer los precios minsa
 # datapaul<-datapaul %>% filter(periodo==paste0(substr(today(),0,4) ,ifelse( month(today())-1<10,paste0("0",month(today())-1),month(today())-1 )))
-# seleccionando un mes cualquiera a elección, se debe cambiar el "202201" por la fecha deseada, solo escribir y correr ese código
-datapaul<-datapaul %>% filter(periodo=="202201")
+# seleccionando un mes cualquiera a elección, se debe cambiar el "202201" por la fecha deseada, solo escribir y correr ese códigO
+
+
+
+# MES QUE DESEAMOS SU SUSTENTO PRECIOS MINSA
+# ESCRIBIR EN VEZ DE LA FECHA QUE ESTA AQUI DEBAJO
+#------------------------------------------#
+                meselegido=202202
+#------------------------------------------#
+
+datapaul<-datapaul %>% filter(periodo==meselegido)
 
 # seleccionando distribuidores porque es lo unico que nos importa para precios minsa
 datapaul<-datapaul %>% filter(tipocl=="DISTRIBUIDORES")
@@ -57,7 +71,7 @@ a$Media<-round(a$Media,digits = 3)
 
 # RECORDAR QUE NO DEBEN HABER PRODUCTOS COVID AQUI
 # HASTA AQUI GENERAMOS EL FORMATO QUE SIRVE PARA PRECIOS MINSA Y PRECIOS PRODUCCIÓN
-write_xlsx(a,"sustentopreciosminsa.xlsx")
+# write_xlsx(a,"sustentopreciosminsa.xlsx")
 
 # con esto descubrimos cual es el numero de fila para el primer ejemplar de cada producto
 filasbordear<-1
@@ -91,6 +105,6 @@ openxlsx::addStyle(
 
 writeData(wb,"Preciosminsa",a,startRow = 1,startCol = 1)
 
-saveWorkbook(wb,file = "prueba.xlsx",TRUE)
+saveWorkbook(wb,file = paste0("sustentopreciosminsa",meselegido,".xlsx"),TRUE)
 
 rm(list = ls())

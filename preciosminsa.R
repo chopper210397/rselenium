@@ -13,7 +13,13 @@ library(writexl)
 library(openxlsx)
 
 # leyendo paul
-datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul")
+datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul",
+                    col_types = c("numeric","numeric","text","numeric","text","text","text","text","text","text",
+                                  "numeric","numeric","numeric","numeric","numeric","numeric","text","text","text","text",
+                                  "text","numeric","numeric","text","numeric","text","text","text","text","numeric"
+                                  ,"text","text"))
+
+# datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul")
 # str(datapaul)
 # unique(datapaul$tipocl)
 # seleccionando el periodo del mes anterior para hacer los precios minsa
@@ -57,7 +63,7 @@ a$Media<-round(a$Media,digits = 3)
 
 # RECORDAR QUE NO DEBEN HABER PRODUCTOS COVID AQUI
 # HASTA AQUI GENERAMOS EL FORMATO QUE SIRVE PARA PRECIOS MINSA Y PRECIOS PRODUCCIÓN
-write_xlsx(a,"sustentopreciosminsa.xlsx")
+# write_xlsx(a,"sustentopreciosminsa.xlsx")
 
 # con esto descubrimos cual es el numero de fila para el primer ejemplar de cada producto
 filasbordear<-1
