@@ -21,7 +21,7 @@ data<-read.csv(file = "C:/Users/LBarrios/Downloads/b2binretail.csv")
 #                                                    year(today())),"%d/%m/%Y")))
 # 
 # data<-data %>% mutate(periodo=as.Date( paste0("01","/",month(today())-1,"/",year(today())),"%d/%m/%Y"))
-# 
+
 
 
 #-------------------------------------------- para un dia normal --------------------------------------------#
@@ -65,7 +65,7 @@ sqlQuery(sqlb2b,"delete from StockInretail")
 # sqlQuery(sqlb2b, paste0("delete from VentaInretail where periodo='01/",
 #                         ifelse(month(today())<10,paste0(0,month(today())-1),month(today())-1) ,
 #                         "/",year(today()),"'"))
-# 
+
 
 # para dia normal usar este codigo
 sqlQuery(sqlb2b, paste0("delete from VentaInretail where periodo='01/",

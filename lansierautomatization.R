@@ -8,7 +8,7 @@ library(readxl)
 sqlcomercial<-odbcConnect("SQLansier",uid = "lv",pwd = "lv.2014c") 
 # trayendo la data de los dos ultimos años de lansier
 lansier<-sqlQuery(sqlcomercial,"[dbo].[STARSOFT_LISTA_VENTAS]")
-# str(lansier)
+  # str(lansier)
 # summary(lansier)
 # unique(lansier$Periodo)
 # unique(lansier$TipoCl)

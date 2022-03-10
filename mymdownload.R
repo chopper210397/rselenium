@@ -122,6 +122,7 @@ data<-read_xlsx(path = paste0("C:\\Users\\LBarrios\\Downloads\\LANSIER-",
                                                                                        ifelse(month(today())==9,"SETIEMBRE",
                                                                                               ifelse(month(today())==10,"OCTUBRE","NOVIEMBRE"))))))))))),
                         ".xlsx" ))
+# data<-read_xlsx(path ="C:\\Users\\LBarrios\\Downloads\\LANSIER-2022-FEBRERO.xlsx" )
 # names(data)
 
 # creando columna fuente que diga M&M

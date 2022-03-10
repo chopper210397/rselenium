@@ -11,7 +11,7 @@ library(lookup)
 library(XLConnect)
 # con esto leemos la data de una fecha en específico dado que si no tenemos la data de hoy pero
 # queremos cargar la data que nos pasaron de otro día copiamos el nombre del archivo en vez de lo nuestro
-# data<-read_xls("C:\\Users\\LBarrios\\Downloads\\1. CIERRE DE VENTAS LANSIER - ENERO 2022.xls", sheet = "DATA",skip = 4)
+data<-read_xls("C:\\Users\\LBarrios\\Downloads\\2. CIERRE DE VENTAS LANSIER - FEBRERO 2022.xls", sheet = "DATA",skip = 4)
 # PARA FECHA DISTINTA A LA DE HOY
 data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE DE VENTAS LANSIER 26.02.22.xls", sheet = "DATA",skip = 4)
 
@@ -67,7 +67,7 @@ data$ARTDES<-paste0(data$PRODUCTO," ",data$PRESENTACION)
 data2<-data %>%
   select(FUENTE,periodo,NUMERO,FECHA,`RUC/DNI`,ELIMINAR,
          `NOMBRE COMERCIAL`,TIPO,ARTDES,
-         CANT.,VALOR,DSCVEND,VENDEDOR,ppuni,ppsol,flag,DEPARTAMENTO,DISTRITO...22,PROVINCIA...21)
+         CANT.,VALOR,DSCVEND,VENDEDOR,ppuni,ppsol,flag,DEPARTAMENTO,DISTRITO...24,PROVINCIA...23)
 
 
 
@@ -90,7 +90,7 @@ write_xlsx(productosnuevosdifarlib,"productosnuevosdifarlib.xlsx")
 data_maestro<-merge(x = data2, y = df2, by.x = "ARTDES", all.x = FALSE)
 
 # creando la combinacion
-data_maestro<-data_maestro %>% mutate(COMBINACION=paste0(PROVINCIA...21,DISTRITO...22))
+data_maestro<-data_maestro %>% mutate(COMBINACION=paste0(PROVINCIA...23,DISTRITO...24))
 # TRAER DATA LOCALIDADES DIFARLIB
 localidadesdifarlib <- read_xlsx("localidadesdifarlib.xlsx")
 localidadesdifarlib<-localidadesdifarlib %>% select(COMBINACION,ZONA)
@@ -108,7 +108,7 @@ data_maestro_localidades<-merge(x = data_maestro, y=localidadesdifarlib, by.x = 
 
 data_maestro_localidades<-data_maestro_localidades %>%
   select(FUENTE,periodo,NUMERO,FECHA,`RUC/DNI`,ELIMINAR,`NOMBRE COMERCIAL`,TIPO,ARTDES,artdesvalid,CANT.,
-         VALOR,DSCVEND,ZONA,VENDEDOR,tipo,equipo,ppuni,ppsol,flag,DEPARTAMENTO,DISTRITO...22,PROVINCIA...21)
+         VALOR,DSCVEND,ZONA,VENDEDOR,tipo,equipo,ppuni,ppsol,flag,DEPARTAMENTO,DISTRITO...24,PROVINCIA...23)
 # ERROR COMÚN: no deberia dar mas registros en data maestro localidades que en data maestro, deberían ser la misma
 # cantidad de observaciones, esto ocurre porque en el archivo fuente hay filas repetidas lo cual esta mal y hace que el programa
 # de errores, revisar esto en el archivo de localidades por lo general esto ocurre ahi porque hay repetidos
