@@ -88,7 +88,7 @@ library(readxl)
 library(writexl)
 library(RODBC)
 
-Sys.sleep(3)
+
 data <- readWorksheetFromFile(paste0("C:\\Users\\LBarrios\\Downloads\\FacMet_",
                                      year(today()),
                                      ifelse(month(today())<10,paste0("0",month(today())),month(today())) ,

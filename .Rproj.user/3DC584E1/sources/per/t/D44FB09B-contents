@@ -30,7 +30,7 @@ datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul",
 # MES QUE DESEAMOS SU SUSTENTO PRECIOS MINSA
 # ESCRIBIR EN VEZ DE LA FECHA QUE ESTA AQUI DEBAJO
 #------------------------------------------#
-                meselegido=202202
+                meselegido=202201
 #------------------------------------------#
 
 datapaul<-datapaul %>% filter(periodo==meselegido)
@@ -52,7 +52,7 @@ a$Soles<-round(a$Soles,digits = 3)
 # ordenando por artdes
 a<-a %>% arrange(artdes,-Precio)
 # con esto evitamos que se repitan los clientes por producto
-a<-a %>% distinct(codart,.keep_all = TRUE)
+b<-a %>% distinct(codart,.keep_all = TRUE)
 
 # ahora hacer una columna con el mayor, menor y media de precio por producto
 maximo<-a %>% group_by(artdes) %>% summarise(Maximo=max(Precio))
@@ -105,6 +105,39 @@ openxlsx::addStyle(
 
 writeData(wb,"Preciosminsa",a,startRow = 1,startCol = 1)
 
+
+
+
+
+
+
+
+#----------------------------------------------------------------#
+#                        PRECIOS PRODUCCIÓN                      #
+#----------------------------------------------------------------#
+# creando hoja INEI
+addWorksheet(
+  wb = wb,
+  sheetName = "INEI"
+)
+
+# quitando espacios delante y detrás
+a$clienom<-trimws(a$clienom,"both")
+a$artdes<-trimws(a$artdes,"both")
+# SELECCIONANDO SOLO LA CADENA
+inei<-a %>% filter(clienom %in% c("BOTICAS Y SALUD S.A.C.","CORPORACION BOTICAS PERU S.A.C.","DROGUERIA INRETAIL PHARMA S.A.C.","INRETAIL PHARMA S.A."))
+
+# seleccionando solo los productos elegidos para el formulario inei
+inei<-inei %>% filter(artdes %in% c("BIOTEARS SOL OFT EST x 15ml","COSOMIDOL SOL OFT ESTl x 5ml","FLORIL NF 0,03% SOL OFT EST x 15ml",
+                                    "FLORIL NF 0,03% SOL OFT EST x 8ml",
+                              "FRAMIDEX NF SOL OFT EST x 2,5ml","HUMED 0,3% SOL OFT EST x 15ml.","MEGATOB SOL OFT EST x 5ml",
+                              "SYSTALAN SOL OFT EST x 15ml","CLORINCORT - P  UNG OFT EST x 3.5g","TERRAMISOL - A UNG OFT EST x 6g"))
+
+inei<-inei %>% group_by(artdes) %>% summarise(cantidad=sum(Unidades),soles=sum(Soles)) %>% mutate(precio=soles/cantidad)
+
+writeData(wb,"INEI",inei,startRow = 1,startCol = 1)
+
+
 saveWorkbook(wb,file = paste0("sustentopreciosminsa",meselegido,".xlsx"),TRUE)
 
-rm(list = ls())
+
