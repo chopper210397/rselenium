@@ -18,8 +18,15 @@ lansier<-sqlQuery(sqlcomercial,"[dbo].[STARSOFT_LISTA_VENTAS]")
 # unique(lansier$dscven)
 # unique(lansier$ColorEqui)
 # unique(lansier$Fecha)
+
+
+#------------------- PARA UN DIA NORMAL ---------------#
 # nos quedamos solo con el periodo actual
 lansier<-lansier %>% filter(Periodo==max(lansier$Periodo))
+
+
+
+# -------------- PARA CIERRE DE MES -------------------#
 # para cerrar el periodo del mes anterior hacer el siguiente código, escogemos el [2], porque ese será el periodo anterior al actual
 # lansier<-lansier %>% filter(Periodo== unique(lansier$Periodo)[2])
 
@@ -56,11 +63,14 @@ lansier<-lansier %>% filter(artdes!="NOXAL 6 MG/ML X 10ML SOLUCIÓN ORAL GOTAS")
 # cruzando data
 lansier<-lansier %>% mutate(FUENTE="LANSIER")
 
+
 # CREANDO PERIODO PARA ESTE MES
 lansier<-lansier %>% mutate(periodo=paste0("01/",
                                      ifelse(month(today())<10,paste0("0",month(today())),month(today())),
                                      "/",
                                      year(today())))
+
+
 # CREANDO PERIODO PARA MES ANTERIOR
 # lansier<-lansier %>% mutate(periodo=paste0("01/",
 #                                            ifelse(month(today())<10,paste0("0",month(today())-1),month(today())-1),

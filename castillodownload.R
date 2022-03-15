@@ -10,11 +10,15 @@ library(lookup)
 library(XLConnect)
 library(writexl)
 # especificamos los col_types porque la columna del total viene con formato posixct asi que debemos especificarle que es numeric
-# PARA CIERRE DE MES
+
+
+#--------------------- PARA CIERRE DE MES ---------------------#
 # data<-read_xls("C:\\Users\\LBarrios\\Downloads\\CMES__LINEA__125.xls",skip = 1,
 # col_types = c("text","text","text","date","text","text","text","text","text","text","text"
 # ,"text","text","text","numeric","numeric"))
 
+
+#--------------------- PARA DIA NORMAL ---------------------#
 data<-read_xls("C:\\Users\\LBarrios\\Downloads\\AVANCE_LINEA_125.xls",skip = 1,
                col_types = c("text","text","text","date","text","text","text","text","text","text","text"
                              ,"text","text","text","numeric","numeric"))
@@ -29,11 +33,13 @@ data$Fecha<-paste0(ifelse(day(data$Fecha)<10,paste0(0,day(data$Fecha)),day(data$
 # creando columna fuente que diga METRONIC
 data<-data %>% mutate(FUENTE="CASTILLO")
 
+
 # creando columna periodo con el primer dia del mes a actualizar
 data<-data %>% mutate(periodo=paste0("01/",
                                      ifelse(month(today())<10,paste0("0",month(today())),month(today())),
                                      "/",
                                      year(today())))
+
 
 # creando columna PERIODO CIERRE DE MES
 # data<-data %>% mutate(periodo=paste0("01/",

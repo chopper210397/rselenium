@@ -30,7 +30,7 @@ datapaul<-read_xlsx("Ventas Lansier 2022 DataPaul.xlsx",sheet = "datapaul",
 # MES QUE DESEAMOS SU SUSTENTO PRECIOS MINSA
 # ESCRIBIR EN VEZ DE LA FECHA QUE ESTA AQUI DEBAJO
 #------------------------------------------#
-                meselegido=202201
+                meselegido=202202
 #------------------------------------------#
 
 datapaul<-datapaul %>% filter(periodo==meselegido)
@@ -38,7 +38,7 @@ datapaul<-datapaul %>% filter(periodo==meselegido)
 # seleccionando distribuidores porque es lo unico que nos importa para precios minsa
 datapaul<-datapaul %>% filter(tipocl=="DISTRIBUIDORES")
 datapaul<-datapaul %>% filter(codart!="NA")
-a<-datapaul %>% group_by(codart,artdes,codclie,clienom,idfactura) %>% summarise(Unidades=sum(cant),Soles=sum(subtotal))
+a<-datapaul %>% group_by(codart,artdes,codclie,clienom,idfactura) %>% dplyr::summarise(Unidades=sum(cant),Soles=sum(subtotal))
 a<-a %>% filter(codart!="TEXTO")
 # ELIMINANDO PRODUCTOS COVID
 a<-a %>% filter(!(codart %in% c("VESOGVT001","VESOGVT002","VESOTR001","VESOTR002","VESOTR003","VESOTR004")))
@@ -55,9 +55,9 @@ a<-a %>% arrange(artdes,-Precio)
 b<-a %>% distinct(codart,.keep_all = TRUE)
 
 # ahora hacer una columna con el mayor, menor y media de precio por producto
-maximo<-a %>% group_by(artdes) %>% summarise(Maximo=max(Precio))
-minimo<-a %>% group_by(artdes) %>% summarise(Minimo=min(Precio))
-promedio<-a %>% group_by(artdes) %>% summarise(Media=mean(Precio))
+maximo<-a %>% group_by(artdes) %>% dplyr::summarise(Maximo=max(Precio))
+minimo<-a %>% group_by(artdes) %>% dplyr::summarise(Minimo=min(Precio))
+promedio<-a %>% group_by(artdes) %>% dplyr::summarise(Media=mean(Precio))
 
 # uniendo los valores hallados con la data original
 a<-merge(a,maximo,by = "artdes",all.x = TRUE)
@@ -133,11 +133,12 @@ inei<-inei %>% filter(artdes %in% c("BIOTEARS SOL OFT EST x 15ml","COSOMIDOL SOL
                               "FRAMIDEX NF SOL OFT EST x 2,5ml","HUMED 0,3% SOL OFT EST x 15ml.","MEGATOB SOL OFT EST x 5ml",
                               "SYSTALAN SOL OFT EST x 15ml","CLORINCORT - P  UNG OFT EST x 3.5g","TERRAMISOL - A UNG OFT EST x 6g"))
 
-inei<-inei %>% group_by(artdes) %>% summarise(cantidad=sum(Unidades),soles=sum(Soles)) %>% mutate(precio=soles/cantidad)
+inei<-inei %>% group_by(artdes) %>% dplyr::summarise(cantidad=sum(Unidades),soles=sum(Soles)) %>% mutate(precio=soles/cantidad)
 
 writeData(wb,"INEI",inei,startRow = 1,startCol = 1)
 
 
 saveWorkbook(wb,file = paste0("sustentopreciosminsa",meselegido,".xlsx"),TRUE)
 
+rm(list=ls())
 
